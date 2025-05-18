@@ -19,5 +19,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "Fruit Classifier CNN Android"
+rootProject.name = "Fruit Classifier"
 include(":app")

@@ -1,4 +1,4 @@
-# Fruit Classifier CNN Mobile 🍌🥭🍍
+# Fruit Classifier CNN Mobile 🍌🥭🍊🍍🌰
 
 Aplikasi Android untuk klasifikasi buah tropis menggunakan model CNN (MobileNetV2) yang dilatih dengan PyTorch dan diintegrasikan dengan PyTorch Mobile (TorchScript).
 
