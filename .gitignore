@@ -1,16 +1,15 @@
-# Python
-__pycache__/
-*.pyc
-
-# Dataset & Model
-/dataset/
-/models/*.pth
-/models/*.pt
-
-# Android Studio
-/android-app/.gradle/
-/android-app/.idea/
-/android-app/app/build/
-android-app/local.properties
 *.iml
+.gradle
+/local.properties
+/.idea/caches
+/.idea/libraries
+/.idea/modules.xml
+/.idea/workspace.xml
+/.idea/navEditor.xml
+/.idea/assetWizardSettings.xml
 .DS_Store
+/build
+/captures
+.externalNativeBuild
+.cxx
+local.properties
