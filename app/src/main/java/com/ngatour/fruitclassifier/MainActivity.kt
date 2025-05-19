@@ -14,9 +14,3 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
-
-@Preview(showBackground = true, showSystemUi = true)
-@Composable
-fun FruitClassifierPreview() {
-    FruitClassifierApp()
-}
