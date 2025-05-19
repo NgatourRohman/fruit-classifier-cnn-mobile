@@ -22,15 +22,30 @@ import coil.compose.rememberAsyncImagePainter
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.content.FileProvider
+import android.Manifest
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.rememberPermissionState
+import androidx.compose.runtime.LaunchedEffect
+import com.google.accompanist.permissions.isGranted
 import java.io.File
 import java.io.FileOutputStream
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalPermissionsApi::class,ExperimentalMaterial3Api::class)
 @Composable
 fun FruitClassifierApp() {
+
+    val cameraPermissionState = rememberPermissionState(permission = Manifest.permission.CAMERA)
+
+    LaunchedEffect(Unit) {
+        if (!cameraPermissionState.status.isGranted) {
+            cameraPermissionState.launchPermissionRequest()
+        }
+    }
+
+
     val context = LocalContext.current
     var imageUri by remember { mutableStateOf<Uri?>(null) }
     var result by remember { mutableStateOf<ClassificationResult?>(null) }
@@ -62,6 +77,12 @@ fun FruitClassifierApp() {
                 .padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            if (!cameraPermissionState.status.isGranted) {
+                Text(
+                    "Aplikasi membutuhkan izin kamera untuk mengambil gambar.",
+                    color = MaterialTheme.colorScheme.error
+                )
+            }
             imageUri?.let {
                 Image(
                     painter = rememberAsyncImagePainter(model = it),

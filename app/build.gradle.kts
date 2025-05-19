@@ -41,10 +41,12 @@ android {
 
 dependencies {
 
+    //Permission
+    implementation ("com.google.accompanist:accompanist-permissions:0.31.5-beta")
+
     //PyTorch
     implementation("org.pytorch:pytorch_android:1.13.1")
     implementation("org.pytorch:pytorch_android_torchvision:1.13.1")
-
 
     implementation("io.coil-kt:coil-compose:2.4.0")
     implementation ("androidx.activity:activity-ktx:1.8.1")
