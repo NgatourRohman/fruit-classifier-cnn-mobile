@@ -42,8 +42,8 @@ android {
 dependencies {
 
     //PyTorch
-    implementation("org.pytorch:pytorch_android:1.13.0")
-    implementation("org.pytorch:pytorch_android_torchvision:1.13.0")
+    implementation("org.pytorch:pytorch_android:1.13.1")
+    implementation("org.pytorch:pytorch_android_torchvision:1.13.1")
 
     //Default
     implementation(libs.androidx.core.ktx)
