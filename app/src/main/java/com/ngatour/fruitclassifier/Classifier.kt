@@ -19,7 +19,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import coil.compose.rememberAsyncImagePainter
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.content.FileProvider
 import android.Manifest
@@ -169,6 +168,8 @@ fun classifyBitmap(context: Context, bitmap: Bitmap, modelName: String): Classif
         "Salak" to "Salak atau snake fruit memiliki rasa manis dan sedikit sepat."
     )
 
+    val threshold = 0.75f // Confidence minimum yang dianggap valid
+
     val module = Module.load(assetFilePath(context, modelName))
     val safeBitmap = convertToMutableBitmap(bitmap)
     val resized = Bitmap.createScaledBitmap(safeBitmap, 224, 224, true)
@@ -180,24 +181,33 @@ fun classifyBitmap(context: Context, bitmap: Bitmap, modelName: String): Classif
     )
 
     val startTime = System.currentTimeMillis()
-
     val outputTensor = module.forward(IValue.from(inputTensor)).toTensor()
-    val scores = outputTensor.dataAsFloatArray
-
     val endTime = System.currentTimeMillis()
     val duration = endTime - startTime
 
-    val maxIdx = scores.indices.maxByOrNull { scores[it] } ?: -1
-    val label = labels.getOrElse(maxIdx) { "Tidak Dikenal" }
-    val confidence = scores[maxIdx] * 100
-    val description = labelDescriptions[label] ?: "Tidak ada deskripsi."
+    val rawScores = outputTensor.dataAsFloatArray
+    val probs = softmax(rawScores)
+    val maxIdx = probs.indices.maxByOrNull { probs[it] } ?: -1
+    val confidenceRaw = probs[maxIdx] // masih dalam 0.0 - 1.0
+    val confidencePercent = confidenceRaw * 100
 
     val dateFormat = SimpleDateFormat("dd-MM-yyyy HH:mm:ss", Locale.getDefault())
     val timestamp = dateFormat.format(Date())
 
-    return ClassificationResult(label, confidence, description, duration, timestamp)
+    return if (confidenceRaw >= threshold) {
+        val label = labels.getOrElse(maxIdx) { "Tidak Dikenal" }
+        val description = labelDescriptions[label] ?: "Tidak ada deskripsi."
+        ClassificationResult(label, confidencePercent, description, duration, timestamp)
+    } else {
+        ClassificationResult(
+            label = "Tidak dikenali",
+            confidence = confidencePercent,
+            description = "Gambar tidak sesuai dengan kelas buah yang telah dikenali.",
+            processTimeMs = duration,
+            timestamp = timestamp
+        )
+    }
 }
-
 
 fun convertToMutableBitmap(source: Bitmap): Bitmap {
     return source.copy(Bitmap.Config.ARGB_8888, true)
@@ -219,6 +229,12 @@ fun assetFilePath(context: Context, assetName: String): String {
     return file.absolutePath
 }
 
+fun softmax(logits: FloatArray): FloatArray {
+    val expScores = logits.map { Math.exp(it.toDouble()) }
+    val sumExp = expScores.sum()
+    return expScores.map { (it / sumExp).toFloat() }.toFloatArray()
+}
+
 data class ClassificationResult(
     val label: String,
     val confidence: Float,
@@ -226,9 +242,3 @@ data class ClassificationResult(
     val processTimeMs: Long,
     val timestamp: String
 )
-
-@Preview(showBackground = true, showSystemUi = true)
-@Composable
-fun FruitClassifierPreview() {
-    FruitClassifierApp()
-}
