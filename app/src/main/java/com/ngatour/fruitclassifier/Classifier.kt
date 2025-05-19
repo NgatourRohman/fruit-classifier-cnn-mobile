@@ -24,12 +24,16 @@ import androidx.compose.ui.unit.dp
 import androidx.core.content.FileProvider
 import java.io.File
 import java.io.FileOutputStream
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FruitClassifierApp() {
     val context = LocalContext.current
-    var prediction by remember { mutableStateOf("Belum ada hasil") }
     var imageUri by remember { mutableStateOf<Uri?>(null) }
+    var result by remember { mutableStateOf<ClassificationResult?>(null) }
 
     val launcherGallery = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
@@ -40,57 +44,83 @@ fun FruitClassifierApp() {
     val launcherCamera = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.TakePicturePreview()
     ) { bitmap: Bitmap? ->
-        if (bitmap != null) {
-            // Simpan sementara ke cache dan ambil URI
-            val uri = saveBitmapToCache(context, bitmap)
+        bitmap?.let {
+            val uri = saveBitmapToCache(context, it)
             imageUri = uri
         }
     }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp), horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        imageUri?.let {
-            Image(
-                painter = rememberAsyncImagePainter(model = it),
-                contentDescription = null,
-                modifier = Modifier
-                    .size(200.dp)
-                    .padding(8.dp)
-            )
+    Scaffold(
+        topBar = {
+            TopAppBar(title = { Text("Klasifikasi Buah Tropis") })
         }
-
-        Text(text = prediction)
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        Row {
-            Button(onClick = { launcherGallery.launch("image/*") }) {
-                Text("Pilih dari Galeri")
-            }
-
-            Spacer(modifier = Modifier.width(8.dp))
-
-            Button(onClick = { launcherCamera.launch(null) }) {
-                Text("Kamera")
-            }
-        }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Button(onClick = {
+    ) { padding ->
+        Column(
+            modifier = Modifier
+                .padding(padding)
+                .fillMaxSize()
+                .padding(16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
             imageUri?.let {
-                val bitmap = uriToBitmap(context, it)
-                prediction = "Prediksi: " + classifyBitmap(context, bitmap, "model_fruit_mobile.pt")
+                Image(
+                    painter = rememberAsyncImagePainter(model = it),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .size(200.dp)
+                        .padding(8.dp)
+                )
+            } ?: Text("Silakan pilih atau ambil gambar", style = MaterialTheme.typography.bodyMedium)
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                Button(onClick = { launcherGallery.launch("image/*") }) {
+                    Text("Galeri")
+                }
+                Button(onClick = { launcherCamera.launch(null) }) {
+                    Text("Kamera")
+                }
             }
-        }) {
-            Text("Klasifikasi Gambar")
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            Button(
+                onClick = {
+                    imageUri?.let {
+                        val bitmap = uriToBitmap(context, it)
+                        result = classifyBitmap(context, bitmap, "model_fruit_mobile.pt")
+                    }
+                },
+                enabled = imageUri != null
+            ) {
+                Text("Klasifikasi Gambar")
+            }
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            result?.let {
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    elevation = CardDefaults.cardElevation(6.dp)
+                ) {
+                    Column(modifier = Modifier.padding(16.dp)) {
+                        Text("📌 Hasil Klasifikasi", style = MaterialTheme.typography.titleMedium)
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text("• Label: ${it.label}")
+                        Text("• Confidence: ${"%.2f".format(it.confidence)}%")
+                        Text("• Waktu Proses: ${it.processTimeMs} ms")
+                        Text("• Tanggal & Jam: ${it.timestamp}")
+                        Spacer(modifier = Modifier.height(4.dp))
+                        Text("Deskripsi: ${it.description}")
+                    }
+                }
+            }
         }
     }
 }
-
 fun uriToBitmap(context: Context, uri: Uri): Bitmap {
     return if (Build.VERSION.SDK_INT < 28) {
         MediaStore.Images.Media.getBitmap(context.contentResolver, uri)
@@ -108,11 +138,17 @@ fun saveBitmapToCache(context: Context, bitmap: Bitmap): Uri {
     return FileProvider.getUriForFile(context, "${context.packageName}.provider", file)
 }
 
-fun classifyBitmap(context: Context, bitmap: Bitmap, modelName: String): String {
+fun classifyBitmap(context: Context, bitmap: Bitmap, modelName: String): ClassificationResult {
     val labels = listOf("Banana", "Mango", "Orange", "Pineapple", "Salak")
+    val labelDescriptions = mapOf(
+        "Banana" to "Pisang adalah buah tropis yang kaya potasium dan vitamin B6.",
+        "Mango" to "Mangga memiliki rasa manis dan tekstur lembut, kaya akan vitamin C.",
+        "Orange" to "Jeruk merupakan sumber vitamin C, biasa dikonsumsi sebagai jus.",
+        "Pineapple" to "Nanas memiliki rasa asam-manis dan tinggi enzim bromelain.",
+        "Salak" to "Salak atau snake fruit memiliki rasa manis dan sedikit sepat."
+    )
 
     val module = Module.load(assetFilePath(context, modelName))
-
     val safeBitmap = convertToMutableBitmap(bitmap)
     val resized = Bitmap.createScaledBitmap(safeBitmap, 224, 224, true)
 
@@ -122,11 +158,23 @@ fun classifyBitmap(context: Context, bitmap: Bitmap, modelName: String): String 
         TensorImageUtils.TORCHVISION_NORM_STD_RGB
     )
 
+    val startTime = System.currentTimeMillis()
+
     val outputTensor = module.forward(IValue.from(inputTensor)).toTensor()
     val scores = outputTensor.dataAsFloatArray
-    val maxIdx = scores.indices.maxByOrNull { scores[it] } ?: -1
 
-    return labels.getOrElse(maxIdx) { "Tidak Dikenal" }
+    val endTime = System.currentTimeMillis()
+    val duration = endTime - startTime
+
+    val maxIdx = scores.indices.maxByOrNull { scores[it] } ?: -1
+    val label = labels.getOrElse(maxIdx) { "Tidak Dikenal" }
+    val confidence = scores[maxIdx] * 100
+    val description = labelDescriptions[label] ?: "Tidak ada deskripsi."
+
+    val dateFormat = SimpleDateFormat("dd-MM-yyyy HH:mm:ss", Locale.getDefault())
+    val timestamp = dateFormat.format(Date())
+
+    return ClassificationResult(label, confidence, description, duration, timestamp)
 }
 
 
@@ -149,6 +197,14 @@ fun assetFilePath(context: Context, assetName: String): String {
     }
     return file.absolutePath
 }
+
+data class ClassificationResult(
+    val label: String,
+    val confidence: Float,
+    val description: String,
+    val processTimeMs: Long,
+    val timestamp: String
+)
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
