@@ -23,7 +23,7 @@ fun MainNavigation(isDarkMode: Boolean, onThemeToggle: () -> Unit) {
         bottomBar = {
             NavigationBar {
                 val currentRoute = navController.currentBackStackEntryAsState().value?.destination?.route
-                listOf(Screen.Classify, Screen.History, Screen.Live, Screen.Profile).forEach { screen ->
+                listOf(Screen.Classify, Screen.History, Screen.Live, Screen.Profile, Screen.Stats).forEach { screen ->
                     NavigationBarItem(
                         selected = currentRoute == screen.route,
                         onClick = { navController.navigate(screen.route) },
@@ -46,6 +46,9 @@ fun MainNavigation(isDarkMode: Boolean, onThemeToggle: () -> Unit) {
             }
             composable(Screen.Profile.route) {
                 ProfileScreen(onThemeToggled = onThemeToggle)
+            }
+            composable(Screen.Stats.route) {
+                StatsScreen(viewModel = viewModel)
             }
         }
     }

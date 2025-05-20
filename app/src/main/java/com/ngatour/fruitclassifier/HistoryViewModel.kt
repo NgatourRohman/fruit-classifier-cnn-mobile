@@ -34,7 +34,6 @@ class HistoryViewModel(application: Application) : AndroidViewModel(application)
         }
     }
 
-
     fun deleteAll() {
         viewModelScope.launch(Dispatchers.IO) {
             dao.deleteAll()
@@ -48,5 +47,19 @@ class HistoryViewModel(application: Application) : AndroidViewModel(application)
             loadHistory()
         }
     }
+
+    fun getStats(): ClassificationStats {
+        val history = history.value
+        if (history.isEmpty()) return ClassificationStats()
+
+        val total = history.size
+        val averageConfidence = history.map { it.confidence }.average().toFloat()
+        val mostFrequent = history.groupBy { it.label }
+            .maxByOrNull { it.value.size }?.key ?: "Tidak tersedia"
+        val lastTimestamp = history.maxByOrNull { it.timestamp }?.timestamp ?: "-"
+
+        return ClassificationStats(total, averageConfidence, mostFrequent, lastTimestamp)
+    }
+
 
 }
