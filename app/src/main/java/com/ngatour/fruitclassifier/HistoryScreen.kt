@@ -35,6 +35,7 @@ fun HistoryScreen(viewModel: HistoryViewModel) {
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
                         Column(modifier = Modifier.weight(1f)) {
+                            Text("User: ${item.userName}")
                             Text("Label: ${item.label}")
                             Text("Confidence: ${"%.2f".format(item.confidence)}%")
                             Text("Waktu: ${item.timestamp}")

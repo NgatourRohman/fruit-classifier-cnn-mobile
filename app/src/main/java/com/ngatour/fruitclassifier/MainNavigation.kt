@@ -23,7 +23,7 @@ fun MainNavigation() {
         bottomBar = {
             NavigationBar {
                 val currentRoute = navController.currentBackStackEntryAsState().value?.destination?.route
-                listOf(Screen.Classify, Screen.History, Screen.Live).forEach { screen ->
+                listOf(Screen.Classify, Screen.History, Screen.Live, Screen.Profile).forEach { screen ->
                     NavigationBarItem(
                         selected = currentRoute == screen.route,
                         onClick = { navController.navigate(screen.route) },
@@ -43,6 +43,9 @@ fun MainNavigation() {
             }
             composable(Screen.Live.route) {
                 LiveCameraScreen(viewModel = viewModel)
+            }
+            composable(Screen.Profile.route) {
+                ProfileScreen()
             }
         }
     }

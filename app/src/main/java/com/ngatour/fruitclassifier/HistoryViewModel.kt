@@ -21,16 +21,19 @@ class HistoryViewModel(application: Application) : AndroidViewModel(application)
     }
 
     fun saveToHistory(result: ClassificationResult) {
+        val prefs = UserPreferences(getApplication()) // Context dari AndroidViewModel
         val item = ClassificationHistoryEntity(
             label = result.label,
             confidence = result.confidence,
             description = result.description,
-            timestamp = result.timestamp
+            timestamp = result.timestamp,
+            userName = prefs.name // ← Ambil nama user aktif
         )
         viewModelScope.launch(Dispatchers.IO) {
             dao.insert(item)
         }
     }
+
 
     fun deleteAll() {
         viewModelScope.launch(Dispatchers.IO) {
