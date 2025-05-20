@@ -14,7 +14,7 @@ import com.google.accompanist.permissions.ExperimentalPermissionsApi
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
-fun MainNavigation() {
+fun MainNavigation(isDarkMode: Boolean, onThemeToggle: () -> Unit) {
     val navController = rememberNavController()
     val context = LocalContext.current
     val viewModel: HistoryViewModel = viewModel()
@@ -45,7 +45,7 @@ fun MainNavigation() {
                 LiveCameraScreen(viewModel = viewModel)
             }
             composable(Screen.Profile.route) {
-                ProfileScreen()
+                ProfileScreen(onThemeToggled = onThemeToggle)
             }
         }
     }
