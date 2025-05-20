@@ -22,11 +22,17 @@ import coil.compose.rememberAsyncImagePainter
 import androidx.compose.ui.unit.dp
 import androidx.core.content.FileProvider
 import android.Manifest
+import android.graphics.BitmapFactory
+import android.graphics.ImageFormat
+import android.graphics.Rect
+import android.graphics.YuvImage
+import androidx.camera.core.ImageProxy
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberPermissionState
 import androidx.compose.runtime.LaunchedEffect
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.google.accompanist.permissions.isGranted
+import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileOutputStream
 import java.text.SimpleDateFormat
@@ -144,6 +150,7 @@ fun FruitClassifierApp(viewModel: HistoryViewModel) {
         }
     }
 }
+
 fun uriToBitmap(context: Context, uri: Uri): Bitmap {
     return if (Build.VERSION.SDK_INT < 28) {
         MediaStore.Images.Media.getBitmap(context.contentResolver, uri)
@@ -151,6 +158,27 @@ fun uriToBitmap(context: Context, uri: Uri): Bitmap {
         val source = ImageDecoder.createSource(context.contentResolver, uri)
         ImageDecoder.decodeBitmap(source)
     }
+}
+
+fun ImageProxy.toBitmap(): Bitmap? {
+    val yBuffer = planes[0].buffer
+    val uBuffer = planes[1].buffer
+    val vBuffer = planes[2].buffer
+
+    val ySize = yBuffer.remaining()
+    val uSize = uBuffer.remaining()
+    val vSize = vBuffer.remaining()
+
+    val nv21 = ByteArray(ySize + uSize + vSize)
+    yBuffer.get(nv21, 0, ySize)
+    vBuffer.get(nv21, ySize, vSize)
+    uBuffer.get(nv21, ySize + vSize, uSize)
+
+    val yuvImage = YuvImage(nv21, ImageFormat.NV21, width, height, null)
+    val out = ByteArrayOutputStream()
+    yuvImage.compressToJpeg(Rect(0, 0, width, height), 100, out)
+    val imageBytes = out.toByteArray()
+    return BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
 }
 
 fun saveBitmapToCache(context: Context, bitmap: Bitmap): Uri {
