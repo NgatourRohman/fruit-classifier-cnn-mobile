@@ -7,6 +7,9 @@ __pycache__/
 /models/*.pth
 /models/*.pt
 
+# Ignore Android project
+android-app/
+
 # Android Studio
 /android-app/.gradle/
 /android-app/.idea/
