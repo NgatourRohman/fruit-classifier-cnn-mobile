@@ -1,6 +1,5 @@
 package com.ngatour.fruitclassifier
 
-import android.graphics.Bitmap
 import androidx.camera.core.*
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
@@ -10,16 +9,15 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
-import java.io.ByteArrayOutputStream
 import java.util.concurrent.Executors
+import androidx.core.graphics.scale
 
 @Composable
 fun LiveCameraScreen(viewModel: HistoryViewModel) {
     val context = LocalContext.current
-    val lifecycleOwner = LocalLifecycleOwner.current
+    val lifecycleOwner = androidx.lifecycle.compose.LocalLifecycleOwner.current
     val resultText = remember { mutableStateOf("Menunggu klasifikasi...") }
 
     val cameraProviderFuture = remember { ProcessCameraProvider.getInstance(context) }
@@ -40,7 +38,7 @@ fun LiveCameraScreen(viewModel: HistoryViewModel) {
         imageAnalyzer.setAnalyzer(Executors.newSingleThreadExecutor()) { imageProxy ->
             val bitmap = imageProxy.toBitmap()
             if (bitmap != null) {
-                val resized = Bitmap.createScaledBitmap(bitmap, 224, 224, true)
+                val resized = bitmap.scale(224, 224)
                 val result = classifyBitmap(context, resized, "model_fruit_mobile.pt")
                 resultText.value = "Label: ${result.label} - ${"%.2f".format(result.confidence)}%"
                 viewModel.saveToHistory(result)

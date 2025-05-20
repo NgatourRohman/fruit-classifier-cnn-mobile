@@ -1,6 +1,5 @@
 package com.ngatour.fruitclassifier
 
-
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
