@@ -31,4 +31,19 @@ class HistoryViewModel(application: Application) : AndroidViewModel(application)
             dao.insert(item)
         }
     }
+
+    fun deleteAll() {
+        viewModelScope.launch(Dispatchers.IO) {
+            dao.deleteAll()
+            loadHistory()
+        }
+    }
+
+    fun deleteById(id: Int) {
+        viewModelScope.launch(Dispatchers.IO) {
+            dao.deleteById(id)
+            loadHistory()
+        }
+    }
+
 }

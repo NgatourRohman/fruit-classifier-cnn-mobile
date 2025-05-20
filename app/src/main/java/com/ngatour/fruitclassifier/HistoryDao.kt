@@ -11,4 +11,11 @@ interface HistoryDao {
 
     @Query("SELECT * FROM classification_history ORDER BY id DESC")
     suspend fun getAll(): List<ClassificationHistoryEntity>
+
+    @Query("DELETE FROM classification_history")
+    suspend fun deleteAll()
+
+    @Query("DELETE FROM classification_history WHERE id = :id")
+    suspend fun deleteById(id: Int)
+
 }
