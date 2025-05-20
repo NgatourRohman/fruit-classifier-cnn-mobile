@@ -25,16 +25,18 @@ import android.Manifest
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberPermissionState
 import androidx.compose.runtime.LaunchedEffect
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.google.accompanist.permissions.isGranted
 import java.io.File
 import java.io.FileOutputStream
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import kotlin.math.exp
 
 @OptIn(ExperimentalPermissionsApi::class,ExperimentalMaterial3Api::class)
 @Composable
-fun FruitClassifierApp() {
+fun FruitClassifierApp(viewModel: HistoryViewModel) {
 
     val cameraPermissionState = rememberPermissionState(permission = Manifest.permission.CAMERA)
 
@@ -44,8 +46,8 @@ fun FruitClassifierApp() {
         }
     }
 
-
     val context = LocalContext.current
+    val viewModel: HistoryViewModel = viewModel()
     var imageUri by remember { mutableStateOf<Uri?>(null) }
     var result by remember { mutableStateOf<ClassificationResult?>(null) }
 
@@ -112,6 +114,7 @@ fun FruitClassifierApp() {
                     imageUri?.let {
                         val bitmap = uriToBitmap(context, it)
                         result = classifyBitmap(context, bitmap, "model_fruit_mobile.pt")
+                        viewModel.saveToHistory(result!!)
                     }
                 },
                 enabled = imageUri != null
@@ -230,7 +233,7 @@ fun assetFilePath(context: Context, assetName: String): String {
 }
 
 fun softmax(logits: FloatArray): FloatArray {
-    val expScores = logits.map { Math.exp(it.toDouble()) }
+    val expScores = logits.map { exp(it.toDouble()) }
     val sumExp = expScores.sum()
     return expScores.map { (it / sumExp).toFloat() }.toFloatArray()
 }

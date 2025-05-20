@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    kotlin("kapt")
 }
 
 android {
@@ -48,11 +49,22 @@ dependencies {
     implementation("org.pytorch:pytorch_android:1.13.1")
     implementation("org.pytorch:pytorch_android_torchvision:1.13.1")
 
+    implementation ("androidx.navigation:navigation-compose:2.7.6")
     implementation ("androidx.core:core-splashscreen:1.0.1")
 
     implementation("io.coil-kt:coil-compose:2.4.0")
     implementation ("androidx.activity:activity-ktx:1.8.1")
     implementation ("androidx.activity:activity-compose:1.8.1")
+    implementation("androidx.compose.material:material-icons-extended:1.5.1")
+
+    //Local Database
+    implementation("androidx.room:room-runtime:2.6.1")
+    kapt("androidx.room:room-compiler:2.6.1")
+    implementation("androidx.room:room-ktx:2.6.1")
+    testImplementation("androidx.room:room-testing:2.6.1")
+
+    //ViewModel
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.2")
 
     //Default
     implementation(libs.androidx.core.ktx)
