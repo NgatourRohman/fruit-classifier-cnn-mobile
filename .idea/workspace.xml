@@ -27,12 +27,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="d03ca7f3-0ceb-4af6-9b54-5a9ea0014dd0" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/app/src/main/java/com/ngatour/fruitclassifier/ClassificationResult.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/src/main/java/com/ngatour/fruitclassifier/util/ModelUtils.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/AndroidManifest.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/AndroidManifest.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/com/ngatour/fruitclassifier/Classifier.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/ngatour/fruitclassifier/Classifier.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/ngatour/fruitclassifier/LiveCameraScreen.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/ngatour/fruitclassifier/LiveCameraScreen.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/ngatour/fruitclassifier/MainNavigation.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/ngatour/fruitclassifier/MainNavigation.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/xml/file_paths.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/xml/file_paths.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -70,8 +68,8 @@
       <list>
         <option value="resourceFile" />
         <option value="Kotlin Class" />
-        <option value="Kotlin File" />
         <option value="Kotlin Data Class" />
+        <option value="Kotlin File" />
       </list>
     </option>
   </component>

@@ -29,12 +29,19 @@ import android.graphics.Paint
 import android.graphics.Rect
 import android.graphics.YuvImage
 import android.graphics.pdf.PdfDocument
+import android.widget.Toast
 import androidx.camera.core.ImageProxy
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberPermissionState
 import androidx.compose.runtime.LaunchedEffect
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.google.accompanist.permissions.isGranted
+import com.ngatour.fruitclassifier.util.downloadModelFromUrl
+import com.ngatour.fruitclassifier.util.isModelUpToDate
+import com.ngatour.fruitclassifier.util.modelFilePath
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileOutputStream
@@ -56,6 +63,7 @@ fun FruitClassifierApp(viewModel: HistoryViewModel) {
     }
 
     val context = LocalContext.current
+    val coroutineScope = rememberCoroutineScope()
     val viewModel: HistoryViewModel = viewModel()
     var imageUri by remember { mutableStateOf<Uri?>(null) }
     var result by remember { mutableStateOf<ClassificationResult?>(null) }
@@ -78,6 +86,35 @@ fun FruitClassifierApp(viewModel: HistoryViewModel) {
     Scaffold(
         topBar = {
             TopAppBar(title = { Text("Klasifikasi Buah Tropis") })
+        },
+        bottomBar = {
+            Button(
+                onClick = {
+                    coroutineScope.launch(Dispatchers.IO) {
+                        val modelUrl = "https://txxpufiorcjddravosxp.supabase.co/storage/v1/object/public/models//model_fruit_mobile.pt"
+                        val localFile = File(context.filesDir, "model_fruit_mobile.pt")
+                        val upToDate = if (localFile.exists()) isModelUpToDate(localFile, modelUrl) else false
+
+                        withContext(Dispatchers.Main) {
+                            if (upToDate) {
+                                Toast.makeText(context, "Model sudah diperbarui", Toast.LENGTH_SHORT).show()
+                            } else {
+                                val file = downloadModelFromUrl(context, modelUrl, "model_fruit_mobile.pt")
+                                if (file != null) {
+                                    Toast.makeText(context, "Model berhasil diperbarui", Toast.LENGTH_SHORT).show()
+                                } else {
+                                    Toast.makeText(context, "Gagal memperbarui model", Toast.LENGTH_SHORT).show()
+                                }
+                            }
+                        }
+                    }
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)
+            ) {
+                Text("Perbarui Model")
+            }
         }
     ) { padding ->
         Column(
@@ -115,7 +152,6 @@ fun FruitClassifierApp(viewModel: HistoryViewModel) {
                     Text("Kamera")
                 }
             }
-
             Spacer(modifier = Modifier.height(24.dp))
 
             Button(
@@ -162,7 +198,6 @@ fun FruitClassifierApp(viewModel: HistoryViewModel) {
                     }
                 }
             }
-
         }
     }
 }
@@ -217,7 +252,7 @@ fun classifyBitmap(context: Context, bitmap: Bitmap, modelName: String): Classif
 
     val threshold = 0.75f // Confidence minimum yang dianggap valid
 
-    val module = Module.load(assetFilePath(context, modelName))
+    val module = Module.load(modelFilePath(context, "model_fruit_mobile.pt"))
     val safeBitmap = convertToMutableBitmap(bitmap)
     val resized = Bitmap.createScaledBitmap(safeBitmap, 224, 224, true)
 
