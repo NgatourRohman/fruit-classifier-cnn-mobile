@@ -45,4 +45,4 @@ Aplikasi Android untuk klasifikasi buah tropis menggunakan model CNN (MobileNetV
 
 1. **Clone repositori**:
    ```bash
-   git clone https://github.com/USERNAME/fruit-classifier-android.git
+   git clone https://github.com/NgatourRohman/fruit-classifier-cnn-mobile.git
