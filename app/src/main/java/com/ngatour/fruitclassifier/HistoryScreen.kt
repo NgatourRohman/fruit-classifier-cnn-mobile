@@ -1,5 +1,7 @@
 package com.ngatour.fruitclassifier
 
+import android.content.Intent
+import android.widget.Toast
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -8,11 +10,14 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.core.content.FileProvider
 
 @Composable
 fun HistoryScreen(viewModel: HistoryViewModel) {
     val history by viewModel.history.collectAsState()
+    val context = LocalContext.current
 
     LaunchedEffect(Unit) {
         viewModel.loadHistory()
@@ -52,12 +57,42 @@ fun HistoryScreen(viewModel: HistoryViewModel) {
         }
 
         Spacer(modifier = Modifier.height(16.dp))
-
-        Button(
-            onClick = { viewModel.deleteAll() },
-            modifier = Modifier.fillMaxWidth()
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 8.dp)
         ) {
-            Text("Hapus Semua")
+            Button(
+                onClick = {
+                    val file = viewModel.exportToCsv(context)
+                    if (file != null) {
+                        val uri = FileProvider.getUriForFile(context, "${context.packageName}.provider", file)
+                        val intent = Intent(Intent.ACTION_SEND).apply {
+                            type = "text/csv"
+                            putExtra(Intent.EXTRA_STREAM, uri)
+                            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                        }
+                        context.startActivity(Intent.createChooser(intent, "Bagikan Riwayat CSV"))
+                    } else {
+                        Toast.makeText(context, "Tidak ada data untuk diekspor", Toast.LENGTH_SHORT).show()
+                    }
+                },
+                modifier = Modifier.weight(1f)
+            ) {
+                Text("Export CSV")
+            }
+
+            Button(
+                onClick = {
+                    viewModel.deleteAll()
+                    Toast.makeText(context, "Semua riwayat dihapus", Toast.LENGTH_SHORT).show()
+                },
+                modifier = Modifier.weight(1f),
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
+            ) {
+                Text("Hapus Semua", color = MaterialTheme.colorScheme.onError)
+            }
         }
     }
 }

@@ -1,12 +1,14 @@
 package com.ngatour.fruitclassifier
 
 import android.app.Application
+import android.content.Context
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import java.io.File
 
 class HistoryViewModel(application: Application) : AndroidViewModel(application) {
     private val dao = AppDatabase.getDatabase(application).historyDao()
@@ -27,7 +29,7 @@ class HistoryViewModel(application: Application) : AndroidViewModel(application)
             confidence = result.confidence,
             description = result.description,
             timestamp = result.timestamp,
-            userName = prefs.name // ← Ambil nama user aktif
+            userName = prefs.name // ← Retrieve active user name
         )
         viewModelScope.launch(Dispatchers.IO) {
             dao.insert(item)
@@ -61,5 +63,23 @@ class HistoryViewModel(application: Application) : AndroidViewModel(application)
         return ClassificationStats(total, averageConfidence, mostFrequent, lastTimestamp)
     }
 
+    fun exportToCsv(context: Context): File? {
+        val history = history.value
+        if (history.isEmpty()) return null
+
+        val csvHeader = "Label,Confidence,Timestamp,Deskripsi\n"
+        val csvBody = history.joinToString("\n") {
+            "${it.label},${it.confidence},${it.timestamp},\"${it.description}\""
+        }
+
+        return try {
+            val file = File(context.getExternalFilesDir(null), "classification_history.csv")
+            file.writeText(csvHeader + csvBody)
+            file
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
+        }
+    }
 
 }
