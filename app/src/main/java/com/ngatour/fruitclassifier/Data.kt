@@ -7,3 +7,10 @@ data class BatchEvaluationResult(
     val avgConfidence: Float,
     val detailedResults: List<ClassificationResult>
 )
+data class SupabaseHistory(
+    val label: String,
+    val confidence: Float,
+    val description: String,
+    val timestamp: String,
+    val username: String
+)

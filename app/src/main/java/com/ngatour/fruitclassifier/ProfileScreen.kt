@@ -1,5 +1,6 @@
 package com.ngatour.fruitclassifier
 
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -26,21 +27,7 @@ fun ProfileScreen(
     val prefs = LocalThemePreference.current
     var isDarkMode by remember { mutableStateOf(prefs.isDarkMode) }
 
-    Row(modifier = Modifier
-        .fillMaxWidth()
-        .padding(end = 16.dp, top = 8.dp, bottom = 8.dp),
-        horizontalArrangement = Arrangement.End,
-        verticalAlignment = Alignment.CenterVertically)
-    {
-        Switch(
-            checked = isDarkMode,
-            onCheckedChange = {
-                isDarkMode = it
-                prefs.isDarkMode = it
-                onThemeToggled() // ACTIVATES THE GLOBAL THEME
-            }
-        )
-    }
+
 
     Column(
         modifier = Modifier
@@ -48,7 +35,24 @@ fun ProfileScreen(
         .verticalScroll(rememberScrollState())
         .navigationBarsPadding() // to provide distance from the bottom bar) {
     ){
-        Text("Profil Pengguna", style = MaterialTheme.typography.titleLarge)
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 4.dp, vertical = 8.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text("Profil Pengguna", style = MaterialTheme.typography.titleLarge)
+            Switch(
+                checked = isDarkMode,
+                onCheckedChange = {
+                    Log.d("ThemeToggle", "User toggled to: $it")
+                    isDarkMode = it
+                    prefs.isDarkMode = it
+                    onThemeToggled()
+                }
+            )
+        }
         Spacer(modifier = Modifier.height(16.dp))
 
         OutlinedTextField(value = name, onValueChange = { name = it }, label = { Text("Nama") })

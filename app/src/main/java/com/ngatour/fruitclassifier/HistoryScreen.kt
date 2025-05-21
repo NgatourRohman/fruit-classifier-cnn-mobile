@@ -10,6 +10,7 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.core.content.FileProvider
@@ -27,35 +28,6 @@ fun HistoryScreen(viewModel: HistoryViewModel) {
         .fillMaxSize()
         .padding(16.dp)) {
 
-        LazyColumn(
-            modifier = Modifier.weight(1f),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            items(history) { item ->
-                Card(modifier = Modifier.fillMaxWidth()) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(12.dp),
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Column(modifier = Modifier.weight(1f)) {
-                            Text("User: ${item.userName}")
-                            Text("Label: ${item.label}")
-                            Text("Confidence: ${"%.2f".format(item.confidence)}%")
-                            Text("Waktu: ${item.timestamp}")
-                            Text("Deskripsi: ${item.description}")
-                        }
-
-                        IconButton(onClick = { viewModel.deleteById(item.id) }) {
-                            Icon(Icons.Default.Delete, contentDescription = "Delete")
-                        }
-                    }
-                }
-
-            }
-        }
-
         Spacer(modifier = Modifier.height(16.dp))
         Row(
             horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -64,6 +36,7 @@ fun HistoryScreen(viewModel: HistoryViewModel) {
                 .padding(bottom = 8.dp)
         ) {
             Button(
+                colors = ButtonDefaults.buttonColors(	containerColor = Color(0xFF4CAF50)),
                 onClick = {
                     val file = viewModel.exportToCsv(context)
                     if (file != null) {
@@ -92,6 +65,47 @@ fun HistoryScreen(viewModel: HistoryViewModel) {
                 colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
             ) {
                 Text("Hapus Semua", color = MaterialTheme.colorScheme.onError)
+            }
+        }
+
+        Spacer(modifier = Modifier.height(8.dp))
+        Button(
+            onClick = {
+                viewModel.uploadAllHistoryToSupabase(context)
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 8.dp)
+        ) {
+            Text("Upload ke Cloud")
+        }
+
+        LazyColumn(
+            modifier = Modifier.weight(1f),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            items(history) { item ->
+                Card(modifier = Modifier.fillMaxWidth()) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(12.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text("User: ${item.userName}")
+                            Text("Label: ${item.label}")
+                            Text("Confidence: ${"%.2f".format(item.confidence)}%")
+                            Text("Waktu: ${item.timestamp}")
+                            Text("Deskripsi: ${item.description}")
+                        }
+
+                        IconButton(onClick = { viewModel.deleteById(item.id) }) {
+                            Icon(Icons.Default.Delete, contentDescription = "Delete")
+                        }
+                    }
+                }
+
             }
         }
     }

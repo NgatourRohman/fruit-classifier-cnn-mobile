@@ -72,6 +72,13 @@ dependencies {
     implementation ("androidx.camera:camera-view:1.3.0")
     implementation ("androidx.camera:camera-core:1.3.0")
 
+    //Retrofit
+    implementation ("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation ("com.squareup.retrofit2:converter-gson:2.9.0")
+
+    //Debug
+    implementation ("com.squareup.okhttp3:logging-interceptor:4.11.0")
+
     //Default
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)

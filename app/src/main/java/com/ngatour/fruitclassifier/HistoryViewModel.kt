@@ -2,12 +2,17 @@ package com.ngatour.fruitclassifier
 
 import android.app.Application
 import android.content.Context
+import android.util.Log
+import android.widget.Toast
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.withContext
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 import java.io.File
 
 class HistoryViewModel(application: Application) : AndroidViewModel(application) {
@@ -82,4 +87,61 @@ class HistoryViewModel(application: Application) : AndroidViewModel(application)
         }
     }
 
+    fun uploadAllHistoryToSupabase(context: Context) {
+        val history = history.value
+        val userName = UserPreferences(context).name
+
+        if (history.isEmpty()) {
+            Toast.makeText(context, "Tidak ada data untuk di-upload", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        val supaList = history.map {
+            SupabaseHistory(
+                label = it.label,
+                confidence = it.confidence,
+                description = it.description,
+                timestamp = it.timestamp,
+                username = userName
+            )
+        }
+
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                val retrofit = Retrofit.Builder()
+                    .baseUrl("https://txxpufiorcjddravosxp.supabase.co/rest/v1/")
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .build()
+
+                val service = retrofit.create(SupabaseService::class.java)
+
+                val response = service.uploadHistory(
+                    data = supaList,
+                    apiKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR4eHB1ZmlvcmNqZGRyYXZvc3hwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDc3NTU1NDQsImV4cCI6MjA2MzMzMTU0NH0.L__y0lxToEonPfboB6rAyfplVNoNTgu92iDjOAKeq3c",
+                    auth = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR4eHB1ZmlvcmNqZGRyYXZvc3hwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDc3NTU1NDQsImV4cCI6MjA2MzMzMTU0NH0.L__y0lxToEonPfboB6rAyfplVNoNTgu92iDjOAKeq3c"
+                )
+
+                withContext(Dispatchers.Main) {
+                    when (response.code()) {
+                        201 -> {
+                            Toast.makeText(context, "Berhasil upload ke Supabase", Toast.LENGTH_SHORT).show()
+                        }
+                        409 -> {
+                            Toast.makeText(context, "Data sudah pernah diupload (duplikat)", Toast.LENGTH_SHORT).show()
+                        }
+                        else -> {
+                            val errorMsg = response.errorBody()?.string() ?: "Tidak diketahui"
+                            Log.e("Upload Error", "Kode: ${response.code()}, Body: $errorMsg")
+                            Toast.makeText(context, "Gagal upload: ${response.code()}", Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                }
+
+            } catch (e: Exception) {
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(context, "Gagal upload: ${e.localizedMessage}", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+    }
 }

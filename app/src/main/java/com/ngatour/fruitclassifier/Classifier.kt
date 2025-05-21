@@ -152,7 +152,7 @@ fun FruitClassifierApp(viewModel: HistoryViewModel) {
                     Text("Kamera")
                 }
             }
-            Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(8.dp))
 
             Button(
                 onClick = {
@@ -167,7 +167,7 @@ fun FruitClassifierApp(viewModel: HistoryViewModel) {
                 Text("Klasifikasi Gambar")
             }
 
-            Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(16.dp))
 
             result?.let {
                 Card(
@@ -250,7 +250,7 @@ fun classifyBitmap(context: Context, bitmap: Bitmap, modelName: String): Classif
         "Salak" to "Salak atau snake fruit memiliki rasa manis dan sedikit sepat."
     )
 
-    val threshold = 0.75f // Confidence minimum yang dianggap valid
+    val threshold = 0.75f // Minimum confidence that is considered valid
 
     val module = Module.load(modelFilePath(context, "model_fruit_mobile.pt"))
     val safeBitmap = convertToMutableBitmap(bitmap)
@@ -270,10 +270,10 @@ fun classifyBitmap(context: Context, bitmap: Bitmap, modelName: String): Classif
     val rawScores = outputTensor.dataAsFloatArray
     val probs = softmax(rawScores)
     val maxIdx = probs.indices.maxByOrNull { probs[it] } ?: -1
-    val confidenceRaw = probs[maxIdx] // masih dalam 0.0 - 1.0
+    val confidenceRaw = probs[maxIdx] // still within 0.0 - 1.0
     val confidencePercent = confidenceRaw * 100
 
-    val dateFormat = SimpleDateFormat("dd-MM-yyyy HH:mm:ss", Locale.getDefault())
+    val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS", Locale.getDefault())
     val timestamp = dateFormat.format(Date())
 
     return if (confidenceRaw >= threshold) {
@@ -293,22 +293,6 @@ fun classifyBitmap(context: Context, bitmap: Bitmap, modelName: String): Classif
 
 fun convertToMutableBitmap(source: Bitmap): Bitmap {
     return source.copy(Bitmap.Config.ARGB_8888, true)
-}
-
-fun assetFilePath(context: Context, assetName: String): String {
-    val file = File(context.filesDir, assetName)
-    if (file.exists() && file.length() > 0) return file.absolutePath
-
-    context.assets.open(assetName).use { inputStream ->
-        FileOutputStream(file).use { outputStream ->
-            val buffer = ByteArray(4 * 1024)
-            var read: Int
-            while (inputStream.read(buffer).also { read = it } != -1)
-                outputStream.write(buffer, 0, read)
-            outputStream.flush()
-        }
-    }
-    return file.absolutePath
 }
 
 fun softmax(logits: FloatArray): FloatArray {
