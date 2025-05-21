@@ -51,5 +51,28 @@ fun ProfileScreen(onThemeToggled: () -> Unit) {
         }) {
             Text("Simpan Profil")
         }
+        Divider(modifier = Modifier.padding(vertical = 16.dp))
+
+        Text("Tentang Aplikasi", style = MaterialTheme.typography.titleMedium)
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        Text("Nama Aplikasi: Klasifikasi Buah Tropis")
+        Text("Versi: 1.0.0")
+        Text("Dibuat oleh: Arthur")
+        Text("Tahun: 2025")
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        Text("Teknologi yang digunakan:")
+        Text("• Kotlin + Jetpack Compose")
+        Text("• PyTorch Mobile (TorchScript)")
+        Text("• Android Studio")
+        Text("• CameraX & Room Database")
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        Text("Aplikasi ini digunakan untuk mengidentifikasi jenis buah tropis dari gambar yang diunggah atau diambil pengguna menggunakan teknologi deep learning berbasis CNN.")
+
     }
 }
