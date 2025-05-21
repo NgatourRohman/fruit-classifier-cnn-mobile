@@ -5,6 +5,8 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import com.ngatour.fruitclassifier.data.pref.ThemePreferences
+import com.ngatour.fruitclassifier.ui.nav.MainNavigation
 
 val LocalThemePreference = staticCompositionLocalOf<ThemePreferences> {
     error("No ThemePreferences provided")

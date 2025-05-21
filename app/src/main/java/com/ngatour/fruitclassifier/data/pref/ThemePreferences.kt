@@ -1,4 +1,4 @@
-package com.ngatour.fruitclassifier
+package com.ngatour.fruitclassifier.data.pref
 
 import android.content.Context
 

@@ -1,4 +1,4 @@
-package com.ngatour.fruitclassifier
+package com.ngatour.fruitclassifier.ui.profile
 
 import android.util.Log
 import android.widget.Toast
@@ -12,6 +12,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.ngatour.fruitclassifier.data.viewmodel.HistoryViewModel
+import com.ngatour.fruitclassifier.LocalThemePreference
+import com.ngatour.fruitclassifier.data.pref.ThemePreferences
+import com.ngatour.fruitclassifier.data.pref.UserPreferences
 
 
 @Composable

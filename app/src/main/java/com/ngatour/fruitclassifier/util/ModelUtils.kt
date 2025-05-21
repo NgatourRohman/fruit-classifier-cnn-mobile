@@ -1,9 +1,18 @@
 package com.ngatour.fruitclassifier.util
 
 import android.content.Context
+import android.graphics.Bitmap
+import com.ngatour.fruitclassifier.data.model.ClassificationResult
+import org.pytorch.IValue
+import org.pytorch.Module
+import org.pytorch.torchvision.TensorImageUtils
 import java.io.*
 import java.net.URL
 import java.net.HttpURLConnection
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
+import kotlin.math.exp
 
 fun downloadModelFromUrl(context: Context, url: String, fileName: String): File? {
     return try {
@@ -45,6 +54,63 @@ fun isModelUpToDate(localFile: File, remoteUrl: String): Boolean {
         val localSize = localFile.length()
         localSize == remoteSize
     } catch (e: Exception) {
-        false // jika gagal dicek, anggap perlu update
+        false // if it fails to check, consider updating
     }
+}
+
+fun classifyBitmap(context: Context, bitmap: Bitmap, modelName: String): ClassificationResult {
+    val labels = listOf("Banana", "Mango", "Orange", "Pineapple", "Salak")
+    val labelDescriptions = mapOf(
+        "Banana" to "Pisang adalah buah tropis yang kaya potasium dan vitamin B6.",
+        "Mango" to "Mangga memiliki rasa manis dan tekstur lembut, kaya akan vitamin C.",
+        "Orange" to "Jeruk merupakan sumber vitamin C, biasa dikonsumsi sebagai jus.",
+        "Pineapple" to "Nanas memiliki rasa asam-manis dan tinggi enzim bromelain.",
+        "Salak" to "Salak atau snake fruit memiliki rasa manis dan sedikit sepat."
+    )
+
+    val threshold = 0.75f // Minimum confidence that is considered valid
+
+    val module = Module.load(modelFilePath(context, "model_fruit_mobile.pt"))
+    val safeBitmap = convertToMutableBitmap(bitmap)
+    val resized = Bitmap.createScaledBitmap(safeBitmap, 224, 224, true)
+
+    val inputTensor = TensorImageUtils.bitmapToFloat32Tensor(
+        resized,
+        TensorImageUtils.TORCHVISION_NORM_MEAN_RGB,
+        TensorImageUtils.TORCHVISION_NORM_STD_RGB
+    )
+
+    val startTime = System.currentTimeMillis()
+    val outputTensor = module.forward(IValue.from(inputTensor)).toTensor()
+    val endTime = System.currentTimeMillis()
+    val duration = endTime - startTime
+
+    val rawScores = outputTensor.dataAsFloatArray
+    val probs = softmax(rawScores)
+    val maxIdx = probs.indices.maxByOrNull { probs[it] } ?: -1
+    val confidenceRaw = probs[maxIdx] // still within 0.0 - 1.0
+    val confidencePercent = confidenceRaw * 100
+
+    val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS", Locale.getDefault())
+    val timestamp = dateFormat.format(Date())
+
+    return if (confidenceRaw >= threshold) {
+        val label = labels.getOrElse(maxIdx) { "Tidak Dikenal" }
+        val description = labelDescriptions[label] ?: "Tidak ada deskripsi."
+        ClassificationResult(label, confidencePercent, description, duration, timestamp)
+    } else {
+        ClassificationResult(
+            label = "Tidak dikenali",
+            confidence = confidencePercent,
+            description = "Gambar tidak sesuai dengan kelas buah yang telah dikenali.",
+            processTimeMs = duration,
+            timestamp = timestamp
+        )
+    }
+}
+
+fun softmax(logits: FloatArray): FloatArray {
+    val expScores = logits.map { exp(it.toDouble()) }
+    val sumExp = expScores.sum()
+    return expScores.map { (it / sumExp).toFloat() }.toFloatArray()
 }

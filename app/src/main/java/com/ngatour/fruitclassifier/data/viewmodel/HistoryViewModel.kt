@@ -1,4 +1,4 @@
-package com.ngatour.fruitclassifier
+package com.ngatour.fruitclassifier.data.viewmodel
 
 import android.app.Application
 import android.content.Context
@@ -6,17 +6,24 @@ import android.util.Log
 import android.widget.Toast
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import com.ngatour.fruitclassifier.data.db.AppDatabase
+import com.ngatour.fruitclassifier.data.db.ClassificationHistoryEntity
+import com.ngatour.fruitclassifier.data.model.ClassificationResult
+import com.ngatour.fruitclassifier.data.model.ClassificationStats
+import com.ngatour.fruitclassifier.data.model.SupabaseHistory
+import com.ngatour.fruitclassifier.data.pref.UserPreferences
+import com.ngatour.fruitclassifier.data.remote.SupabaseService
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.io.File
 
 class HistoryViewModel(application: Application) : AndroidViewModel(application) {
-    private val dao = AppDatabase.getDatabase(application).historyDao()
+    private val dao = AppDatabase.Companion.getDatabase(application).historyDao()
 
     private val _history = MutableStateFlow<List<ClassificationHistoryEntity>>(emptyList())
     val history: StateFlow<List<ClassificationHistoryEntity>> = _history
@@ -124,22 +131,40 @@ class HistoryViewModel(application: Application) : AndroidViewModel(application)
                 withContext(Dispatchers.Main) {
                     when (response.code()) {
                         201 -> {
-                            Toast.makeText(context, "Berhasil upload ke Supabase", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(
+                                context,
+                                "Berhasil upload ke Supabase",
+                                Toast.LENGTH_SHORT
+                            ).show()
                         }
+
                         409 -> {
-                            Toast.makeText(context, "Data sudah pernah diupload (duplikat)", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(
+                                context,
+                                "Data sudah pernah diupload (duplikat)",
+                                Toast.LENGTH_SHORT
+                            ).show()
                         }
+
                         else -> {
                             val errorMsg = response.errorBody()?.string() ?: "Tidak diketahui"
                             Log.e("Upload Error", "Kode: ${response.code()}, Body: $errorMsg")
-                            Toast.makeText(context, "Gagal upload: ${response.code()}", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(
+                                context,
+                                "Gagal upload: ${response.code()}",
+                                Toast.LENGTH_SHORT
+                            ).show()
                         }
                     }
                 }
 
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
-                    Toast.makeText(context, "Gagal upload: ${e.localizedMessage}", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        context,
+                        "Gagal upload: ${e.localizedMessage}",
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
             }
         }

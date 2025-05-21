@@ -1,4 +1,4 @@
-package com.ngatour.fruitclassifier
+package com.ngatour.fruitclassifier.ui.live
 
 import androidx.camera.core.*
 import androidx.camera.lifecycle.ProcessCameraProvider
@@ -13,11 +13,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import java.util.concurrent.Executors
 import androidx.core.graphics.scale
+import androidx.lifecycle.compose.LocalLifecycleOwner
+import com.ngatour.fruitclassifier.data.viewmodel.HistoryViewModel
+import com.ngatour.fruitclassifier.util.classifyBitmap
 
 @Composable
 fun LiveCameraScreen(viewModel: HistoryViewModel) {
     val context = LocalContext.current
-    val lifecycleOwner = androidx.lifecycle.compose.LocalLifecycleOwner.current
+    val lifecycleOwner = LocalLifecycleOwner.current
     val resultText = remember { mutableStateOf("Menunggu klasifikasi...") }
 
     val cameraProviderFuture = remember { ProcessCameraProvider.getInstance(context) }

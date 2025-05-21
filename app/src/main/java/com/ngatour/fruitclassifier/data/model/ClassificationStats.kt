@@ -1,4 +1,4 @@
-package com.ngatour.fruitclassifier
+package com.ngatour.fruitclassifier.data.model
 
 data class ClassificationStats(
     val total: Int = 0,
@@ -6,4 +6,3 @@ data class ClassificationStats(
     val mostFrequentLabel: String = "-",
     val lastTime: String = "-"
 )
-

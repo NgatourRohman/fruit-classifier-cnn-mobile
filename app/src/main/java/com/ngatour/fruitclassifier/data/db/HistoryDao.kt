@@ -1,4 +1,4 @@
-package com.ngatour.fruitclassifier
+package com.ngatour.fruitclassifier.data.db
 
 import androidx.room.Dao
 import androidx.room.Insert

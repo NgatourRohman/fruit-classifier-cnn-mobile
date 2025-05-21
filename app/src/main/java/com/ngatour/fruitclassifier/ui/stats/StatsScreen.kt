@@ -1,4 +1,4 @@
-package com.ngatour.fruitclassifier
+package com.ngatour.fruitclassifier.ui.stats
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -17,6 +17,11 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.platform.LocalContext
+import com.ngatour.fruitclassifier.data.viewmodel.HistoryViewModel
+import com.ngatour.fruitclassifier.data.model.BatchEvaluationResult
+import com.ngatour.fruitclassifier.data.model.ClassificationResult
+import com.ngatour.fruitclassifier.util.classifyBitmap
+import com.ngatour.fruitclassifier.util.uriToBitmap
 
 @Composable
 fun StatsScreen(viewModel: HistoryViewModel) {

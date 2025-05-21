@@ -1,9 +1,10 @@
-package com.ngatour.fruitclassifier
+package com.ngatour.fruitclassifier.data.db
 
 import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+
 
 @Database(entities = [ClassificationHistoryEntity::class], version = 2)
 abstract class AppDatabase : RoomDatabase() {

@@ -1,4 +1,4 @@
-package com.ngatour.fruitclassifier
+package com.ngatour.fruitclassifier.data.db
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey

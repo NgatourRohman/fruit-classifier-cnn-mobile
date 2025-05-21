@@ -1,4 +1,4 @@
-package com.ngatour.fruitclassifier
+package com.ngatour.fruitclassifier.data.model
 
 data class ClassificationResult(
     val label: String,
