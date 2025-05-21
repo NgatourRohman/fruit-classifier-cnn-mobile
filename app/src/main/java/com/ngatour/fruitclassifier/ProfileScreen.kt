@@ -2,15 +2,22 @@ package com.ngatour.fruitclassifier
 
 import android.widget.Toast
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
+
 
 @Composable
-fun ProfileScreen(onThemeToggled: () -> Unit) {
+fun ProfileScreen(
+    onThemeToggled: () -> Unit,
+    viewModel: HistoryViewModel = viewModel()
+) {
     val context = LocalContext.current
     val userPrefs = remember { UserPreferences(context) }
     var name by remember { mutableStateOf(userPrefs.name) }
@@ -35,7 +42,12 @@ fun ProfileScreen(onThemeToggled: () -> Unit) {
         )
     }
 
-    Column(modifier = Modifier.padding(16.dp)) {
+    Column(
+        modifier = Modifier
+        .padding(16.dp)
+        .verticalScroll(rememberScrollState())
+        .navigationBarsPadding() // to provide distance from the bottom bar) {
+    ){
         Text("Profil Pengguna", style = MaterialTheme.typography.titleLarge)
         Spacer(modifier = Modifier.height(16.dp))
 
@@ -73,6 +85,22 @@ fun ProfileScreen(onThemeToggled: () -> Unit) {
         Spacer(modifier = Modifier.height(8.dp))
 
         Text("Aplikasi ini digunakan untuk mengidentifikasi jenis buah tropis dari gambar yang diunggah atau diambil pengguna menggunakan teknologi deep learning berbasis CNN.")
+
+        Spacer(modifier = Modifier.height(16.dp))
+        Divider(modifier = Modifier.padding(vertical = 8.dp))
+
+        Button(
+            onClick = {
+                viewModel.deleteAll()
+                UserPreferences(context).clearAll()
+                ThemePreferences(context).isDarkMode = false
+                Toast.makeText(context, "Semua data telah direset", Toast.LENGTH_SHORT).show()
+            },
+            modifier = Modifier.fillMaxWidth(),
+            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
+        ) {
+            Text("Reset Semua Data", color = MaterialTheme.colorScheme.onError)
+        }
 
     }
 }

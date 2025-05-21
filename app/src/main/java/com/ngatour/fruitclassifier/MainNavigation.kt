@@ -45,7 +45,10 @@ fun MainNavigation(isDarkMode: Boolean, onThemeToggle: () -> Unit) {
                 LiveCameraScreen(viewModel = viewModel)
             }
             composable(Screen.Profile.route) {
-                ProfileScreen(onThemeToggled = onThemeToggle)
+                ProfileScreen(
+                    onThemeToggled = onThemeToggle,
+                    viewModel = viewModel
+                )
             }
             composable(Screen.Stats.route) {
                 StatsScreen(viewModel = viewModel)

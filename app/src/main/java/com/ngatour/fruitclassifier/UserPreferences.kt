@@ -12,4 +12,9 @@ class UserPreferences(context: Context) {
     var email: String
         get() = prefs.getString("email", "") ?: ""
         set(value) = prefs.edit().putString("email", value).apply()
+    fun clearAll() {
+        prefs.edit().clear().apply()
+    }
 }
+
+
