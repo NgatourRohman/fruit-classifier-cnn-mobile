@@ -1,32 +1,27 @@
 package com.ngatour.fruitclassifier.ui.stats
 
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import android.net.Uri
-import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import com.ngatour.fruitclassifier.data.viewmodel.HistoryViewModel
+import androidx.compose.ui.unit.dp
 import com.ngatour.fruitclassifier.data.model.BatchEvaluationResult
 import com.ngatour.fruitclassifier.data.model.ClassificationResult
+import com.ngatour.fruitclassifier.data.viewmodel.HistoryViewModel
 import com.ngatour.fruitclassifier.util.classifyBitmap
 import com.ngatour.fruitclassifier.util.uriToBitmap
 
 @Composable
 fun StatsScreen(viewModel: HistoryViewModel) {
-    val stats = viewModel.getStats()
+    val history by viewModel.history.collectAsState()
     val context = LocalContext.current
+
     val evaluatedResult = remember { mutableStateOf<BatchEvaluationResult?>(null) }
 
     val launcherBatchPick = rememberLauncherForActivityResult(
@@ -40,7 +35,7 @@ fun StatsScreen(viewModel: HistoryViewModel) {
         }
 
         val classified = results.filter { it.label != "Tidak dikenali" }
-        val averageConfidence = if (classified.isNotEmpty()) {
+        val avgConf = if (classified.isNotEmpty()) {
             classified.map { it.confidence }.average().toFloat()
         } else 0f
 
@@ -48,21 +43,41 @@ fun StatsScreen(viewModel: HistoryViewModel) {
             total = results.size,
             recognized = classified.size,
             unrecognized = results.size - classified.size,
-            avgConfidence = averageConfidence,
+            avgConfidence = avgConf,
             detailedResults = results
         )
     }
 
-    Column(modifier = Modifier.padding(16.dp)) {
-
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp)
+            .verticalScroll(rememberScrollState())
+    ) {
         Text("📊 Statistik Klasifikasi", style = MaterialTheme.typography.titleLarge)
-        Spacer(modifier = Modifier.height(12.dp))
-        Text("Total Klasifikasi: ${stats.total}")
-        Text("Confidence Rata-Rata: ${"%.2f".format(stats.averageConfidence)}%")
-        Text("Buah Paling Sering Terdeteksi: ${stats.mostFrequentLabel}")
-        Text("Klasifikasi Terakhir: ${stats.lastTime}")
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // Label distribution (Pie Chart)
+        val labelDistribution = history.groupingBy { it.label }.eachCount()
+        if (labelDistribution.isNotEmpty()) {
+            Text("Distribusi Label:", style = MaterialTheme.typography.titleMedium)
+            PieChart(data = labelDistribution)
+        }
 
         Spacer(modifier = Modifier.height(16.dp))
+
+        // Confidence rata-rata by label (Bar Chart)
+        val avgConfidencePerLabel = history
+            .groupBy { it.label }
+            .mapValues { (_, list) -> list.map { it.confidence }.average().toFloat() }
+
+        if (avgConfidencePerLabel.isNotEmpty()) {
+            Text("Confidence Rata-rata per Label:", style = MaterialTheme.typography.titleMedium)
+            BarChart(data = avgConfidencePerLabel)
+        }
+
+        Spacer(modifier = Modifier.height(24.dp))
+
         Button(
             onClick = { launcherBatchPick.launch("image/*") },
             modifier = Modifier.fillMaxWidth()
@@ -71,32 +86,10 @@ fun StatsScreen(viewModel: HistoryViewModel) {
         }
 
         evaluatedResult.value?.let { result ->
-            Spacer(modifier = Modifier.height(12.dp))
-            Text("📦 Hasil Evaluasi Batch:")
+            Spacer(modifier = Modifier.height(16.dp))
+            Text("📦 Hasil Evaluasi:")
             Text("Total gambar: ${result.total}")
             Text("Dikenali: ${result.recognized}")
-            Text("Tidak dikenali: ${result.unrecognized}")
-            Text("Confidence rata-rata: ${"%.2f".format(result.avgConfidence)}%")
-
-            Button(
-                onClick = {
-                    evaluatedResult.value?.let {
-                        val results = it.detailedResults
-                        results.forEach { res ->
-                            if (res.label != "Tidak dikenali") {
-                                viewModel.saveToHistory(res)
-                            }
-                        }
-                        Toast.makeText(context, "Berhasil disimpan ke riwayat", Toast.LENGTH_SHORT).show()
-                    }
-                },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 8.dp)
-            ) {
-                Text("Simpan ke Riwayat")
-            }
-
         }
     }
 }

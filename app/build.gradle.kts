@@ -66,6 +66,9 @@ dependencies {
     //ViewModel
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.2")
 
+    //Chart
+    implementation("androidx.compose.foundation:foundation:1.5.4")
+
     //Camera
     implementation ("androidx.camera:camera-camera2:1.3.0")
     implementation ("androidx.camera:camera-lifecycle:1.3.0")
