@@ -1,9 +1,13 @@
 package com.ngatour.fruitclassifier.data.db
 
 import androidx.room.Entity
+import androidx.room.Index
 import androidx.room.PrimaryKey
 
-@Entity(tableName = "classification_history")
+@Entity(
+    tableName = "classification_history",
+    indices = [Index(value = ["timestamp", "userName"], unique = true)]
+)
 data class ClassificationHistoryEntity(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
     val label: String,
