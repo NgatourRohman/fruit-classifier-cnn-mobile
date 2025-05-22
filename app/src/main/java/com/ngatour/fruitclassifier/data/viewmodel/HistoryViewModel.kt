@@ -206,4 +206,29 @@ class HistoryViewModel(application: Application) : AndroidViewModel(application)
             }
         }
     }
+
+    fun uploadToSupabaseSingle(result: ClassificationResult, context: Context) {
+        val username = UserPreferences(context).name
+
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                val retrofit = Retrofit.Builder()
+                    .baseUrl("https://txxpufiorcjddravosxp.supabase.co/rest/v1/")
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .build()
+                val service = retrofit.create(SupabaseService::class.java)
+
+                val uploadData = SupabaseHistory(
+                    label = result.label,
+                    confidence = result.confidence,
+                    description = result.description,
+                    timestamp = result.timestamp,
+                    username = username
+                )
+                service.uploadHistory(listOf(uploadData)) // use list for bulk POST
+            } catch (e: Exception) {
+                Log.e("UPLOAD", "Gagal upload: ${e.localizedMessage}")
+            }
+        }
+    }
 }

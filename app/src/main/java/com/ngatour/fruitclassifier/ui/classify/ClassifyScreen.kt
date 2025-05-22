@@ -142,8 +142,12 @@ fun FruitClassifierScreen(viewModel: HistoryViewModel) {
                 onClick = {
                     imageUri?.let {
                         val bitmap = uriToBitmap(context, it)
-                        result = classifyBitmap(context, bitmap, "model_fruit_mobile.pt")
-                        viewModel.saveToHistory(result!!)
+                        val res = classifyBitmap(context, bitmap, "model_fruit_mobile.pt")
+                        res?.let {
+                            result = it
+                            viewModel.saveToHistory(it)
+                            viewModel.uploadToSupabaseSingle(it, context) // upload otomatis
+                        } ?: Toast.makeText(context, "Gagal klasifikasi", Toast.LENGTH_SHORT).show()
                     }
                 },
                 enabled = imageUri != null

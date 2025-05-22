@@ -1,6 +1,7 @@
 package com.ngatour.fruitclassifier.ui.stats
 
 import android.net.Uri
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.*
@@ -90,6 +91,22 @@ fun StatsScreen(viewModel: HistoryViewModel) {
             Text("📦 Hasil Evaluasi:")
             Text("Total gambar: ${result.total}")
             Text("Dikenali: ${result.recognized}")
+            Text("Tidak dikenali: ${result.unrecognized}")
+            Text("Confidence rata-rata: ${"%.2f".format(result.avgConfidence)}%")
+
+            Spacer(modifier = Modifier.height(8.dp))
+            Button(onClick = {
+                result.detailedResults.forEach {
+                    if (it.label != "Tidak dikenali") {
+                        viewModel.saveToHistory(it)
+                        viewModel.uploadToSupabaseSingle(it, context) // upload otomatis
+                    }
+                }
+                Toast.makeText(context, "Berhasil disimpan & diunggah", Toast.LENGTH_SHORT).show()
+            }) {
+                Text("Simpan ke Riwayat & Upload")
+            }
         }
+
     }
 }
