@@ -42,9 +42,28 @@ fun downloadModelFromUrl(context: Context, url: String, fileName: String): File?
 
 fun modelFilePath(context: Context, fileName: String): String {
     val file = File(context.filesDir, fileName)
-    if (file.exists()) return file.absolutePath
-    else throw FileNotFoundException("Model not found: $fileName")
+
+    // If it's already in filesDir, use it
+    if (file.exists() && file.length() > 0) return file.absolutePath
+
+    // Fallback: try copying from assets if it's not there yet
+    return try {
+        context.assets.open(fileName).use { inputStream ->
+            FileOutputStream(file).use { outputStream ->
+                val buffer = ByteArray(4 * 1024)
+                var read: Int
+                while (inputStream.read(buffer).also { read = it } != -1) {
+                    outputStream.write(buffer, 0, read)
+                }
+                outputStream.flush()
+            }
+        }
+        file.absolutePath
+    } catch (e: Exception) {
+        throw FileNotFoundException("Model not found in filesDir or assets: $fileName")
+    }
 }
+
 
 fun isModelUpToDate(localFile: File, remoteUrl: String): Boolean {
     return try {
@@ -70,7 +89,7 @@ fun classifyBitmap(context: Context, bitmap: Bitmap, modelName: String): Classif
 
     val threshold = 0.75f // Minimum confidence that is considered valid
 
-    val module = Module.load(modelFilePath(context, "model_fruit_mobile.pt"))
+    val module = Module.load(modelFilePath(context, modelName))
     val safeBitmap = convertToMutableBitmap(bitmap)
     val resized = Bitmap.createScaledBitmap(safeBitmap, 224, 224, true)
 
