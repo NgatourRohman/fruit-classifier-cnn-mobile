@@ -93,13 +93,6 @@ fun SettingsScreen(
             )
         }
 
-        // Upload to Supabase
-        Button(onClick = {
-            viewModel.uploadAllHistoryToSupabase(context)
-        }, modifier = Modifier.fillMaxWidth()) {
-            Text("Upload Riwayat ke Cloud")
-        }
-
         // Export CSV & Share
         Button(onClick = {
             val file = viewModel.exportToCsv(context)
