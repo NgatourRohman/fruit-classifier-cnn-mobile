@@ -17,6 +17,7 @@ import com.ngatour.fruitclassifier.ui.stats.StatsScreen
 import com.ngatour.fruitclassifier.ui.classify.FruitClassifierScreen
 import com.ngatour.fruitclassifier.ui.live.LiveCameraScreen
 import com.ngatour.fruitclassifier.ui.profile.ProfileScreen
+import com.ngatour.fruitclassifier.ui.settings.AboutScreen
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
@@ -60,6 +61,9 @@ fun MainNavigation(isDarkMode: Boolean, onThemeToggle: () -> Unit) {
             }
             composable(Screen.Profile.route) {
                 ProfileScreen()
+            }
+            composable(Screen.About.route) {
+                AboutScreen()
             }
         }
     }

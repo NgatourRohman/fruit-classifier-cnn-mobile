@@ -5,6 +5,7 @@ import android.widget.Toast
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.setValue
@@ -35,17 +36,40 @@ fun SettingsScreen(
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
 
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 8.dp),
-            horizontalArrangement = Arrangement.SpaceBetween
+        Card(
+            onClick = { navController.navigate(Screen.Profile.route) },
+            modifier = Modifier.fillMaxWidth(),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
         ) {
-            Text("Profil Pengguna", style = MaterialTheme.typography.titleMedium)
-            IconButton(onClick = { navController.navigate(Screen.Profile.route) }) {
+            Row(
+                modifier = Modifier
+                    .padding(16.dp)
+                    .fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text("Profil Pengguna", style = MaterialTheme.typography.bodyLarge)
                 Icon(
                     imageVector = Icons.Default.AccountCircle,
                     contentDescription = "Buka Profil"
+                )
+            }
+        }
+
+        Card(
+            onClick = { navController.navigate(Screen.About.route) },
+            modifier = Modifier.fillMaxWidth(),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+        ) {
+            Row(
+                modifier = Modifier
+                    .padding(16.dp)
+                    .fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text("Tentang Peneliti", style = MaterialTheme.typography.bodyLarge)
+                Icon(
+                    imageVector = Icons.Default.Info,
+                    contentDescription = "Tentang Peneliti"
                 )
             }
         }
