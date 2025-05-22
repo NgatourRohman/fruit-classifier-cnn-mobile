@@ -93,11 +93,21 @@ fun SettingsScreen(
             )
         }
 
-        // Upload ke Supabase
+        // Upload to Supabase
         Button(onClick = {
             viewModel.uploadAllHistoryToSupabase(context)
         }, modifier = Modifier.fillMaxWidth()) {
             Text("Upload Riwayat ke Cloud")
+        }
+
+        Button(
+            onClick = {
+                viewModel.fetchFromSupabase(context)
+                Toast.makeText(context, "Data dari cloud diambil", Toast.LENGTH_SHORT).show()
+            },
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text("Sinkronisasi dari Cloud")
         }
 
         // Export CSV & Share
