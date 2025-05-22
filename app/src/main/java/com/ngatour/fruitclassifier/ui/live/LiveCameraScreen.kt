@@ -43,8 +43,14 @@ fun LiveCameraScreen(viewModel: HistoryViewModel) {
             if (bitmap != null) {
                 val resized = bitmap.scale(224, 224)
                 val result = classifyBitmap(context, resized, "model_fruit_mobile.pt")
+
+                if (result.label != "Tidak dikenali") {
+                    viewModel.saveToHistory(result)
+                    viewModel.uploadToSupabaseSingle(result, context)
+                }
+
                 resultText.value = "Label: ${result.label} - ${"%.2f".format(result.confidence)}%"
-                viewModel.saveToHistory(result)
+
             }
             imageProxy.close()
         }
