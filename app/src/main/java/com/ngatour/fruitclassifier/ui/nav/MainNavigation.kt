@@ -11,6 +11,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.compose.ui.Modifier
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.ngatour.fruitclassifier.ui.history.HistoryScreen
+import com.ngatour.fruitclassifier.ui.settings.SettingsScreen
 import com.ngatour.fruitclassifier.data.viewmodel.HistoryViewModel
 import com.ngatour.fruitclassifier.ui.stats.StatsScreen
 import com.ngatour.fruitclassifier.ui.classify.FruitClassifierScreen
@@ -27,7 +28,7 @@ fun MainNavigation(isDarkMode: Boolean, onThemeToggle: () -> Unit) {
         bottomBar = {
             NavigationBar {
                 val currentRoute = navController.currentBackStackEntryAsState().value?.destination?.route
-                listOf(Screen.Classify, Screen.History, Screen.Live, Screen.Profile, Screen.Stats).forEach { screen ->
+                listOf(Screen.Classify, Screen.History, Screen.Live, Screen.Stats, Screen.Settings).forEach { screen ->
                     NavigationBarItem(
                         selected = currentRoute == screen.route,
                         onClick = { navController.navigate(screen.route) },
@@ -48,14 +49,17 @@ fun MainNavigation(isDarkMode: Boolean, onThemeToggle: () -> Unit) {
             composable(Screen.Live.route) {
                 LiveCameraScreen(viewModel = viewModel)
             }
-            composable(Screen.Profile.route) {
-                ProfileScreen(
-                    onThemeToggled = onThemeToggle,
-                    viewModel = viewModel
-                )
-            }
             composable(Screen.Stats.route) {
                 StatsScreen(viewModel = viewModel)
+            }
+            composable(Screen.Settings.route) {
+                SettingsScreen(viewModel = viewModel,
+                    navController = navController,
+                    onThemeToggled = onThemeToggle
+                )
+            }
+            composable(Screen.Profile.route) {
+                ProfileScreen()
             }
         }
     }

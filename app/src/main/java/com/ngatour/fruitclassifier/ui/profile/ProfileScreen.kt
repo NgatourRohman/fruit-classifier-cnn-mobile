@@ -19,10 +19,7 @@ import com.ngatour.fruitclassifier.data.pref.UserPreferences
 
 
 @Composable
-fun ProfileScreen(
-    onThemeToggled: () -> Unit,
-    viewModel: HistoryViewModel = viewModel()
-) {
+fun ProfileScreen(viewModel: HistoryViewModel = viewModel()) {
     val context = LocalContext.current
     val userPrefs = remember { UserPreferences(context) }
     var name by remember { mutableStateOf(userPrefs.name) }
@@ -47,15 +44,6 @@ fun ProfileScreen(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text("Profil Pengguna", style = MaterialTheme.typography.titleLarge)
-            Switch(
-                checked = isDarkMode,
-                onCheckedChange = {
-                    Log.d("ThemeToggle", "User toggled to: $it")
-                    isDarkMode = it
-                    prefs.isDarkMode = it
-                    onThemeToggled()
-                }
-            )
         }
         Spacer(modifier = Modifier.height(16.dp))
 

@@ -29,58 +29,6 @@ fun HistoryScreen(viewModel: HistoryViewModel) {
         .fillMaxSize()
         .padding(16.dp)) {
 
-        Spacer(modifier = Modifier.height(16.dp))
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 8.dp)
-        ) {
-            Button(
-                colors = ButtonDefaults.buttonColors(	containerColor = Color(0xFF4CAF50)),
-                onClick = {
-                    val file = viewModel.exportToCsv(context)
-                    if (file != null) {
-                        val uri = FileProvider.getUriForFile(context, "${context.packageName}.provider", file)
-                        val intent = Intent(Intent.ACTION_SEND).apply {
-                            type = "text/csv"
-                            putExtra(Intent.EXTRA_STREAM, uri)
-                            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                        }
-                        context.startActivity(Intent.createChooser(intent, "Bagikan Riwayat CSV"))
-                    } else {
-                        Toast.makeText(context, "Tidak ada data untuk diekspor", Toast.LENGTH_SHORT).show()
-                    }
-                },
-                modifier = Modifier.weight(1f)
-            ) {
-                Text("Export CSV")
-            }
-
-            Button(
-                onClick = {
-                    viewModel.deleteAll()
-                    Toast.makeText(context, "Semua riwayat dihapus", Toast.LENGTH_SHORT).show()
-                },
-                modifier = Modifier.weight(1f),
-                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
-            ) {
-                Text("Hapus Semua", color = MaterialTheme.colorScheme.onError)
-            }
-        }
-
-        Spacer(modifier = Modifier.height(8.dp))
-        Button(
-            onClick = {
-                viewModel.uploadAllHistoryToSupabase(context)
-            },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 8.dp)
-        ) {
-            Text("Upload ke Cloud")
-        }
-
         LazyColumn(
             modifier = Modifier.weight(1f),
             verticalArrangement = Arrangement.spacedBy(8.dp)
@@ -107,6 +55,26 @@ fun HistoryScreen(viewModel: HistoryViewModel) {
                     }
                 }
 
+            }
+        }
+
+        if (history.isNotEmpty()) {
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 8.dp)
+            ) {
+                Button(
+                    onClick = {
+                        viewModel.deleteAll()
+                        Toast.makeText(context, "Semua riwayat dihapus", Toast.LENGTH_SHORT).show()
+                    },
+                    modifier = Modifier.weight(1f),
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
+                ) {
+                    Text("Hapus Semua", color = MaterialTheme.colorScheme.onError)
+                }
             }
         }
     }
