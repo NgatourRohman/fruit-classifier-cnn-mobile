@@ -192,4 +192,41 @@ class HistoryViewModel(application: Application) : AndroidViewModel(application)
             }
         }
     }
+
+    fun syncFromSupabase(context: Context) {
+        val username = UserPreferences(context).name
+
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                val retrofit = Retrofit.Builder()
+                    .baseUrl("https://txxpufiorcjddravosxp.supabase.co/rest/v1/")
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .build()
+                val service = retrofit.create(SupabaseService::class.java)
+
+                val remoteData = service.getHistory()
+
+                val dao = AppDatabase.getDatabase(context).historyDao()
+
+                remoteData.forEach {
+                    try {
+                        // only insert if it doesn't exist (because Supabase has constraints, you can ignore the error)
+                        dao.insert(
+                            ClassificationHistoryEntity(
+                                label = it.label,
+                                confidence = it.confidence,
+                                description = it.description,
+                                timestamp = it.timestamp,
+                                userName = it.username
+                            )
+                        )
+                    } catch (e: Exception) {
+                        // possible duplicates, skip it
+                    }
+                }
+            } catch (e: Exception) {
+                Log.e("SYNC", "Gagal sinkronisasi dari cloud: ${e.localizedMessage}")
+            }
+        }
+    }
 }
