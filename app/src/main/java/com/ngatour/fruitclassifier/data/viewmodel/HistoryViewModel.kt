@@ -170,29 +170,6 @@ class HistoryViewModel(application: Application) : AndroidViewModel(application)
         }
     }
 
-    fun fetchFromSupabase(context: Context) {
-        viewModelScope.launch(Dispatchers.IO) {
-            val retrofit = Retrofit.Builder()
-                .baseUrl("https://txxpufiorcjddravosxp.supabase.co/rest/v1/")
-                .addConverterFactory(GsonConverterFactory.create())
-                .build()
-
-            val service = retrofit.create(SupabaseService::class.java)
-            val remoteData = service.getHistory()
-
-            val dao = AppDatabase.getDatabase(context).historyDao()
-            remoteData.forEach {
-                dao.insert(ClassificationHistoryEntity(
-                    label = it.label,
-                    confidence = it.confidence,
-                    description = it.description,
-                    timestamp = it.timestamp,
-                    userName = it.username
-                ))
-            }
-        }
-    }
-
     fun syncFromSupabase(context: Context) {
         val username = UserPreferences(context).name
 
