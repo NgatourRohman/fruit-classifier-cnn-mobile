@@ -12,14 +12,12 @@ import com.ngatour.fruitclassifier.data.model.ClassificationResult
 import com.ngatour.fruitclassifier.data.model.ClassificationStats
 import com.ngatour.fruitclassifier.data.model.SupabaseHistory
 import com.ngatour.fruitclassifier.data.pref.UserPreferences
+import com.ngatour.fruitclassifier.data.remote.SupabaseClient
 import com.ngatour.fruitclassifier.data.remote.SupabaseService
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 import java.io.File
 
 class HistoryViewModel(application: Application) : AndroidViewModel(application) {
@@ -99,14 +97,8 @@ class HistoryViewModel(application: Application) : AndroidViewModel(application)
 
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                val retrofit = Retrofit.Builder()
-                    .baseUrl("https://txxpufiorcjddravosxp.supabase.co/rest/v1/")
-                    .addConverterFactory(GsonConverterFactory.create())
-                    .build()
-                val service = retrofit.create(SupabaseService::class.java)
-
+                val service = SupabaseClient.retrofit.create(SupabaseService::class.java)
                 val remoteData = service.getHistory()
-
                 val dao = AppDatabase.getDatabase(context).historyDao()
 
                 remoteData.forEach {
@@ -136,11 +128,7 @@ class HistoryViewModel(application: Application) : AndroidViewModel(application)
 
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                val retrofit = Retrofit.Builder()
-                    .baseUrl("https://txxpufiorcjddravosxp.supabase.co/rest/v1/")
-                    .addConverterFactory(GsonConverterFactory.create())
-                    .build()
-                val service = retrofit.create(SupabaseService::class.java)
+                val service = SupabaseClient.retrofit.create(SupabaseService::class.java)
 
                 val uploadData = SupabaseHistory(
                     label = result.label,
