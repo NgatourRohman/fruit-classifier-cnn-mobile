@@ -13,6 +13,8 @@ import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.ngatour.fruitclassifier.ui.history.HistoryScreen
 import com.ngatour.fruitclassifier.ui.settings.SettingsScreen
 import com.ngatour.fruitclassifier.data.viewmodel.HistoryViewModel
+import com.ngatour.fruitclassifier.ui.auth.LoginScreen
+import com.ngatour.fruitclassifier.ui.auth.RegisterScreen
 import com.ngatour.fruitclassifier.ui.stats.StatsScreen
 import com.ngatour.fruitclassifier.ui.classify.FruitClassifierScreen
 import com.ngatour.fruitclassifier.ui.live.LiveCameraScreen
@@ -65,6 +67,14 @@ fun MainNavigation(isDarkMode: Boolean, onThemeToggle: () -> Unit) {
             composable(Screen.About.route) {
                 AboutScreen()
             }
+            composable(Screen.Login.route) {
+                LoginScreen(navController)
+            }
+
+            composable(Screen.Register.route) {
+                RegisterScreen(navController)
+            }
+
         }
     }
 }
