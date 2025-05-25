@@ -1,6 +1,7 @@
 package com.ngatour.fruitclassifier.data.auth
 
 import android.content.Context
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ngatour.fruitclassifier.data.remote.SupabaseConfig
@@ -27,24 +28,30 @@ class AuthViewModel : ViewModel() {
     }
 
     fun login(email: String, password: String, context: Context, onSuccess: () -> Unit, onError: (String) -> Unit) {
+        if (email.isBlank() || password.isBlank()) {
+            onError("Email dan password tidak boleh kosong")
+            return
+        }
+
         viewModelScope.launch {
             try {
-                val response: HttpResponse = client.post("${SupabaseConfig.AUTH_BASE_URL}token?grant_type=password")
-
-                {
+                val response: HttpResponse = client.post("${SupabaseConfig.AUTH_BASE_URL}token?grant_type=password") {
                     headers {
                         append("apikey", SupabaseConfig.API_KEY)
-                        append("Content-Type", "application/json")
+                        append(HttpHeaders.ContentType, "application/json")
                     }
                     setBody("""{"email":"$email","password":"$password"}""")
                 }
+
+                Log.d("LOGIN", "Status: ${response.status}")
+                Log.d("LOGIN", "Body: ${response.bodyAsText()}")
 
                 if (response.status == HttpStatusCode.OK) {
                     val auth = response.body<AuthResponse>()
                     SessionManager(context).saveToken(auth.access_token)
                     onSuccess()
                 } else {
-                    onError("Login gagal: ${response.status}")
+                    onError("Login gagal: ${response.bodyAsText()}")
                 }
             } catch (e: Exception) {
                 onError("Terjadi kesalahan: ${e.localizedMessage}")

@@ -11,6 +11,7 @@ import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.PersonAdd
 import androidx.compose.material.icons.filled.QueryStats
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.Start
 import androidx.compose.ui.graphics.vector.ImageVector
 
 sealed class Screen(val route: String, val title: String, val icon: ImageVector) {
@@ -23,4 +24,5 @@ sealed class Screen(val route: String, val title: String, val icon: ImageVector)
     object About : Screen("about", "Tentang Aplikasi", Icons.Filled.Info)
     object Login : Screen("login", "Login", Icons.Filled.Lock)
     object Register : Screen("register", "Register", Icons.Filled.PersonAdd)
+    object Splash : Screen("splash", "Splash", Icons.Filled.Start)
 }

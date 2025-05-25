@@ -20,29 +20,49 @@ import com.ngatour.fruitclassifier.ui.classify.FruitClassifierScreen
 import com.ngatour.fruitclassifier.ui.live.LiveCameraScreen
 import com.ngatour.fruitclassifier.ui.profile.ProfileScreen
 import com.ngatour.fruitclassifier.ui.settings.AboutScreen
+import com.ngatour.fruitclassifier.ui.splash.SplashScreen
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun MainNavigation(isDarkMode: Boolean, onThemeToggle: () -> Unit) {
     val navController = rememberNavController()
+    val currentBackStackEntry = navController.currentBackStackEntryAsState().value
+    val currentRoute = currentBackStackEntry?.destination?.route
     val viewModel: HistoryViewModel = viewModel()
+
+    val hideBottomBarRoutes = listOf(
+        Screen.Splash.route,
+        Screen.Login.route,
+        Screen.Register.route
+    )
 
     Scaffold(
         bottomBar = {
-            NavigationBar {
-                val currentRoute = navController.currentBackStackEntryAsState().value?.destination?.route
-                listOf(Screen.Classify, Screen.History, Screen.Live, Screen.Stats, Screen.Settings).forEach { screen ->
-                    NavigationBarItem(
-                        selected = currentRoute == screen.route,
-                        onClick = { navController.navigate(screen.route) },
-                        icon = { Icon(screen.icon, contentDescription = screen.title) },
-                        label = { Text(screen.title) }
-                    )
+            if (currentRoute !in hideBottomBarRoutes) {
+                NavigationBar {
+                    listOf(Screen.Classify, Screen.History, Screen.Live, Screen.Stats, Screen.Settings).forEach { screen ->
+                        NavigationBarItem(
+                            selected = currentRoute == screen.route,
+                            onClick = { navController.navigate(screen.route) },
+                            icon = { Icon(screen.icon, contentDescription = screen.title) },
+                            label = { Text(screen.title) }
+                        )
+                    }
                 }
             }
         }
     ) { padding ->
-        NavHost(navController, startDestination = Screen.Classify.route, Modifier.padding(padding)) {
+        NavHost(navController, startDestination = Screen.Splash.route, Modifier.padding(padding)) {
+            composable(Screen.Splash.route) {
+                SplashScreen(navController)
+            }
+            composable(Screen.Login.route) {
+                LoginScreen(navController)
+            }
+
+            composable(Screen.Register.route) {
+                RegisterScreen(navController)
+            }
             composable(Screen.Classify.route) {
                 FruitClassifierScreen(viewModel = viewModel)
             }
@@ -67,14 +87,6 @@ fun MainNavigation(isDarkMode: Boolean, onThemeToggle: () -> Unit) {
             composable(Screen.About.route) {
                 AboutScreen()
             }
-            composable(Screen.Login.route) {
-                LoginScreen(navController)
-            }
-
-            composable(Screen.Register.route) {
-                RegisterScreen(navController)
-            }
-
         }
     }
 }

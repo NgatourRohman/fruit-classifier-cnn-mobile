@@ -17,6 +17,7 @@ import com.ngatour.fruitclassifier.data.pref.UserPreferences
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.ngatour.fruitclassifier.LocalThemePreference
+import com.ngatour.fruitclassifier.data.auth.SessionManager
 import com.ngatour.fruitclassifier.data.viewmodel.HistoryViewModel
 import com.ngatour.fruitclassifier.ui.nav.Screen
 
@@ -29,6 +30,7 @@ fun SettingsScreen(
     val context = LocalContext.current
     val themePrefs = LocalThemePreference.current
     var isDarkMode by remember { mutableStateOf(themePrefs.isDarkMode) }
+    val session = SessionManager(context)
 
     Column(modifier = Modifier
         .padding(16.dp)
@@ -127,6 +129,18 @@ fun SettingsScreen(
             colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
         ) {
             Text("Reset Semua Data", color = MaterialTheme.colorScheme.onError)
+        }
+        Button(
+            onClick = {
+                session.clear()
+                navController.navigate(Screen.Login.route) {
+                    popUpTo(0)
+                }
+            },
+            modifier = Modifier.fillMaxWidth(),
+            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
+        ) {
+            Text("Logout", color = MaterialTheme.colorScheme.onError)
         }
     }
 }
