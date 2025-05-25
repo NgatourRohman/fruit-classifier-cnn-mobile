@@ -38,8 +38,8 @@ fun AboutScreen() {
         Text("Tentang Peneliti", style = MaterialTheme.typography.titleLarge)
         Spacer(modifier = Modifier.height(16.dp))
 
-        Text("👤 Nama: [Nama Lengkap]")
-        Text("🎓 NIM: [NIM Kamu]")
+        Text("👤 Nama : Ngatour Rohman")
+        Text("🎓 NIM  : 202143501481")
         Text("🏫 Prodi: Teknik Informatika")
         Text("📄 Judul: Klasifikasi Buah Tropis dengan CNN pada Platform Mobile")
         Text("🏢 Universitas: Universitas Indraprasta PGRI")
