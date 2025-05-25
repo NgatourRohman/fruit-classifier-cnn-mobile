@@ -63,6 +63,15 @@ android {
 
 dependencies {
 
+    //Auth
+    implementation("io.ktor:ktor-client-okhttp:2.3.3")
+    implementation("io.ktor:ktor-client-content-negotiation:2.3.3")
+    implementation("io.ktor:ktor-client-core:2.3.3")
+    implementation("io.ktor:ktor-client-serialization:2.3.3")
+    implementation("io.ktor:ktor-serialization-kotlinx-json:2.3.3")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.1")
+
+
     //Permission
     implementation ("com.google.accompanist:accompanist-permissions:0.31.5-beta")
 
