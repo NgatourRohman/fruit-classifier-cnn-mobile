@@ -66,7 +66,7 @@ fun SettingsScreen(
                     .fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Text("Tentang Peneliti", style = MaterialTheme.typography.bodyLarge)
+                Text("Tentang Aplikasi", style = MaterialTheme.typography.bodyLarge)
                 Icon(
                     imageVector = Icons.Default.Info,
                     contentDescription = "Tentang Peneliti"
