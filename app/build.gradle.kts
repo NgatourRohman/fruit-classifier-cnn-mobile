@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -17,6 +19,24 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        // Load properties from local.properties
+        val localProperties = Properties()
+        val localPropertiesFile = project.rootProject.file("local.properties") // Access from the root project
+        if (localPropertiesFile.exists()) {
+            localPropertiesFile.inputStream().use { input ->
+                localProperties.load(input)
+            }
+        } else {
+            println("Warning: local.properties not found. Using default empty values for API keys.")
+        }
+
+        val supabaseApiKey = localProperties.getProperty("SUPABASE_API_KEY", "")
+        val supabaseBaseUrl = localProperties.getProperty("SUPABASE_BASE_URL", "")
+
+        buildConfigField("String", "SUPABASE_API_KEY", "\"$supabaseApiKey\"")
+        buildConfigField("String", "SUPABASE_BASE_URL", "\"$supabaseBaseUrl\"")
+
     }
 
     buildTypes {
@@ -37,6 +57,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 }
 
