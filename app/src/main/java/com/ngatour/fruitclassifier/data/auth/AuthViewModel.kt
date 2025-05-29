@@ -4,6 +4,7 @@ import android.content.Context
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.ngatour.fruitclassifier.data.pref.UserPreferences
 import com.ngatour.fruitclassifier.data.remote.SupabaseConfig
 import io.ktor.client.*
 import io.ktor.client.call.*
@@ -45,7 +46,18 @@ class AuthViewModel : ViewModel() {
                 if (response.status == HttpStatusCode.OK) {
                     val auth = response.body<AuthResponse>()
                     SessionManager(context).saveToken(auth.access_token)
+
+                    // Save user data
+                    UserPreferences(context).saveUser(
+                        name = auth.user?.email?.substringBefore("@")
+                            ?.replace(".", " ")
+                            ?.replaceFirstChar { it.uppercaseChar() }
+                            ?: "Pengguna",
+                        email = auth.user?.email ?: "-"
+                    )
+
                     onSuccess()
+
                 } else {
                     onError("Login gagal: ${response.bodyAsText()}")
                 }

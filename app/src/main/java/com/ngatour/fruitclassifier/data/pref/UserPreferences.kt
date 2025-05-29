@@ -15,4 +15,11 @@ class UserPreferences(context: Context) {
     fun clearAll() {
         prefs.edit().clear().apply()
     }
+
+    fun saveUser(name: String, email: String) {
+        prefs.edit()
+            .putString("name", name)
+            .putString("email", email)
+            .apply()
+    }
 }
