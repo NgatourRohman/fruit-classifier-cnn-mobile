@@ -14,7 +14,6 @@ import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.coroutines.launch
-import kotlinx.serialization.*
 import kotlinx.serialization.json.Json
 
 class AuthViewModel : ViewModel() {
