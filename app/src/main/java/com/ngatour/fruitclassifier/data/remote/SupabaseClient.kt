@@ -24,4 +24,6 @@ object SupabaseClient {
         .client(client)
         .addConverterFactory(GsonConverterFactory.create())
         .build()
+
+    val api: SupabaseService = retrofit.create(SupabaseService::class.java)
 }

@@ -47,9 +47,10 @@ fun HistoryScreen(viewModel: HistoryViewModel) {
                             Text("Deskripsi: ${item.description}")
                         }
 
-                        IconButton(onClick = { viewModel.deleteById(item.id) }) {
+                        IconButton(onClick = { viewModel.deleteById(item) }) {
                             Icon(Icons.Default.Delete, contentDescription = "Delete")
                         }
+
                     }
                 }
 
@@ -65,7 +66,7 @@ fun HistoryScreen(viewModel: HistoryViewModel) {
             ) {
                 Button(
                     onClick = {
-                        viewModel.deleteAll()
+                        viewModel.deleteAll(context)
                         Toast.makeText(context, "Semua riwayat dihapus", Toast.LENGTH_SHORT).show()
                     },
                     modifier = Modifier.weight(1f),

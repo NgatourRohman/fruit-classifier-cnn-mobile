@@ -110,7 +110,7 @@ fun classifyBitmap(context: Context, bitmap: Bitmap, modelName: String): Classif
     val confidenceRaw = probs[maxIdx] // still within 0.0 - 1.0
     val confidencePercent = confidenceRaw * 100
 
-    val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS", Locale.getDefault())
+    val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
     val timestamp = dateFormat.format(Date())
 
     return if (confidenceRaw >= threshold) {

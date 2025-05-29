@@ -19,10 +19,11 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import java.io.File
+import java.net.URLEncoder
 
 class HistoryViewModel(application: Application) : AndroidViewModel(application) {
     private val dao = AppDatabase.Companion.getDatabase(application).historyDao()
-
+    private val api = SupabaseClient.api
     private val _history = MutableStateFlow<List<ClassificationHistoryEntity>>(emptyList())
     val history: StateFlow<List<ClassificationHistoryEntity>> = _history
 
@@ -46,16 +47,37 @@ class HistoryViewModel(application: Application) : AndroidViewModel(application)
         }
     }
 
-    fun deleteAll() {
-        viewModelScope.launch(Dispatchers.IO) {
-            dao.deleteAll()
+    fun deleteById(entity: ClassificationHistoryEntity) {
+        viewModelScope.launch {
+            dao.deleteById(entity.id) // Local
+            try {
+                val timestampQuery = "eq.${entity.timestamp}"
+                val usernameQuery = "eq.${entity.userName}"
+                val response = api.deleteByTimestampAndUsername(timestampQuery, usernameQuery)
+                Log.d("Supabase", "DELETE Cloud status: ${response.code()}")
+            } catch (e: Exception) {
+                Log.e("Supabase", "Cloud delete failed: ${e.message}")
+            }
             loadHistory()
         }
     }
 
-    fun deleteById(id: Int) {
-        viewModelScope.launch(Dispatchers.IO) {
-            dao.deleteById(id)
+    fun deleteAll(context: Context) {
+        val username = UserPreferences(context).name
+
+        viewModelScope.launch {
+            // Local delete
+            dao.deleteAll()
+
+            // Delete in Supabase by username
+            try {
+                val usernameQuery = "eq.$username"
+                val response = api.deleteAllByUsername(usernameQuery)
+                Log.d("Supabase", "DELETE ALL status: ${response.code()}")
+            } catch (e: Exception) {
+                Log.e("Supabase", "Gagal hapus semua cloud: ${e.message}")
+            }
+
             loadHistory()
         }
     }
