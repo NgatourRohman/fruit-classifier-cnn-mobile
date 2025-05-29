@@ -17,9 +17,6 @@ import kotlinx.coroutines.launch
 import kotlinx.serialization.*
 import kotlinx.serialization.json.Json
 
-@Serializable
-data class AuthResponse(val access_token: String)
-
 class AuthViewModel : ViewModel() {
     private val client = HttpClient(OkHttp) {
         install(ContentNegotiation) {
