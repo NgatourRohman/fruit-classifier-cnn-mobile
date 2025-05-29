@@ -117,19 +117,6 @@ fun SettingsScreen(
             Text("Export Riwayat ke CSV")
         }
 
-        // Reset Data
-        Button(
-            onClick = {
-                viewModel.deleteAll()
-                UserPreferences(context).clearAll()
-                themePrefs.isDarkMode = false
-                Toast.makeText(context, "Semua data berhasil direset.", Toast.LENGTH_SHORT).show()
-            },
-            modifier = Modifier.fillMaxWidth(),
-            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
-        ) {
-            Text("Reset Semua Data", color = MaterialTheme.colorScheme.onError)
-        }
         Button(
             onClick = {
                 session.clear()
