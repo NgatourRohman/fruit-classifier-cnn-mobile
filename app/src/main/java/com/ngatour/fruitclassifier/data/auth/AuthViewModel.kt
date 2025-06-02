@@ -48,13 +48,12 @@ class AuthViewModel : ViewModel() {
                     SessionManager(context).saveToken(auth.access_token)
 
                     // Save user data
-                    UserPreferences(context).saveUser(
-                        name = auth.user?.email?.substringBefore("@")
-                            ?.replace(".", " ")
-                            ?.replaceFirstChar { it.uppercaseChar() }
-                            ?: "Pengguna",
-                        email = auth.user?.email ?: "-"
-                    )
+                    val nameFromMetadata = auth.user?.user_metadata?.name
+                    val email = auth.user?.email ?: "-"
+                    val name = nameFromMetadata ?: "Pengguna"
+
+                    UserPreferences(context).saveUser(name = name, email = email)
+
 
                     onSuccess()
 
@@ -67,7 +66,7 @@ class AuthViewModel : ViewModel() {
         }
     }
 
-    fun register(email: String, password: String, context: Context, onSuccess: () -> Unit, onError: (String) -> Unit) {
+    fun register(email: String, password: String, name: String, context: Context, onSuccess: () -> Unit, onError: (String) -> Unit) {
         viewModelScope.launch {
             try {
                 val response: HttpResponse = client.post("${SupabaseConfig.AUTH_BASE_URL}signup")
@@ -76,7 +75,15 @@ class AuthViewModel : ViewModel() {
                         append("apikey", SupabaseConfig.API_KEY)
                         append("Content-Type", "application/json")
                     }
-                    setBody("""{"email":"$email","password":"$password"}""")
+                    setBody("""
+                        {
+                            "email": "$email",
+                            "password": "$password",
+                            "data": {
+                                "name": "$name"
+                            }
+                        }
+                    """.trimIndent())
                 }
 
                 if (response.status == HttpStatusCode.OK) {

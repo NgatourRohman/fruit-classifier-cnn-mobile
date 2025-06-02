@@ -14,5 +14,11 @@ data class AuthResponse(
 @Serializable
 data class AuthUser(
     val id: String,
-    val email: String
+    val email: String,
+    val user_metadata: UserMetadata? = null
+)
+
+@Serializable
+data class UserMetadata(
+    val name: String? = null
 )
