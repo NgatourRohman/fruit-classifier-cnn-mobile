@@ -21,7 +21,6 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
@@ -72,7 +71,7 @@ fun LoginScreen(navController: NavController, viewModel: AuthViewModel = AuthVie
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .fillMaxHeight(0.80f)
+                .fillMaxHeight(0.73f)
                 .align(Alignment.BottomCenter)
         ) {
 
@@ -80,9 +79,9 @@ fun LoginScreen(navController: NavController, viewModel: AuthViewModel = AuthVie
                 painter = painterResource(id = R.drawable.fruit_logo),
                 contentDescription = "Logo",
                 modifier = Modifier
-                    .size(150.dp)
+                    .size(130.dp)
                     .align(Alignment.TopCenter)
-                    .offset(y = (-120).dp)
+                    .offset(y = (-170).dp)
             )
 
             // Login Form
@@ -103,6 +102,7 @@ fun LoginScreen(navController: NavController, viewModel: AuthViewModel = AuthVie
                 )
 
                 Spacer(modifier = Modifier.height(15.dp))
+
                 Text(
                     "Welcome back, You’ve\nbeen missed!",
                     textAlign = TextAlign.Center,
@@ -137,6 +137,7 @@ fun LoginScreen(navController: NavController, viewModel: AuthViewModel = AuthVie
                 )
 
                 Spacer(modifier = Modifier.height(27.dp))
+
                 OutlinedTextField(
                     value = password,
                     onValueChange = { password = it },
@@ -169,8 +170,8 @@ fun LoginScreen(navController: NavController, viewModel: AuthViewModel = AuthVie
                     )
                 )
 
-
                 Spacer(modifier = Modifier.height(27.dp))
+
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -218,6 +219,7 @@ fun LoginScreen(navController: NavController, viewModel: AuthViewModel = AuthVie
                 }
 
                 Spacer(modifier = Modifier.height(27.dp))
+
                 Button(
                     onClick = {
                         viewModel.login(
