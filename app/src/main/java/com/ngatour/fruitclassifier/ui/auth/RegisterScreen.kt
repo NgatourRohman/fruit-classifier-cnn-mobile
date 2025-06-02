@@ -189,7 +189,7 @@ fun RegisterScreen(navController: NavController, viewModel: AuthViewModel = Auth
                 Button(
                     onClick = {
                         if (name.isBlank() || email.isBlank() || password.isBlank()) {
-                            Toast.makeText(context, "Semua field harus diisi", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(context, "All fields must be filled", Toast.LENGTH_SHORT).show()
                             return@Button
                         }
 
@@ -201,7 +201,7 @@ fun RegisterScreen(navController: NavController, viewModel: AuthViewModel = Auth
                             context = context,
                             onSuccess = {
                                 isLoading = false
-                                Toast.makeText(context, "Berhasil daftar", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(context, "Successfully registered", Toast.LENGTH_SHORT).show()
                                 navController.navigate(Screen.Login.route)
                             },
                             onError = {

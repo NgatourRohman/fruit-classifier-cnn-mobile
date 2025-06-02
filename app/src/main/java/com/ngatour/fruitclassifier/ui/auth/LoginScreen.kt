@@ -208,7 +208,7 @@ fun LoginScreen(navController: NavController, viewModel: AuthViewModel = AuthVie
                             viewModel.forgotPassword(email, context) {
                                 Toast.makeText(
                                     context,
-                                    "Link reset dikirim ke email",
+                                    "Password reset link sent to your email",
                                     Toast.LENGTH_SHORT
                                 ).show()
                             }
