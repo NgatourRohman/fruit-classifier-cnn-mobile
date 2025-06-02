@@ -121,4 +121,26 @@ class AuthViewModel : ViewModel() {
             }
         }
     }
+
+    fun resetPassword(email: String, onSuccess: () -> Unit, onError: (String) -> Unit) {
+        viewModelScope.launch {
+            try {
+                val response: HttpResponse = client.post("${SupabaseConfig.AUTH_BASE_URL}recover") {
+                    headers {
+                        append("apikey", SupabaseConfig.API_KEY)
+                        append(HttpHeaders.ContentType, "application/json")
+                    }
+                    setBody("""{"email":"$email"}""")
+                }
+
+                if (response.status == HttpStatusCode.OK) {
+                    onSuccess()
+                } else {
+                    onError("Gagal mengirim email reset: ${response.bodyAsText()}")
+                }
+            } catch (e: Exception) {
+                onError("Error: ${e.localizedMessage}")
+            }
+        }
+    }
 }
