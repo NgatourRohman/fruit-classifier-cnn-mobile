@@ -2,6 +2,7 @@ package com.ngatour.fruitclassifier.data.auth
 
 import android.content.Context
 import android.util.Log
+import android.widget.Toast
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ngatour.fruitclassifier.data.pref.UserPreferences
@@ -9,14 +10,13 @@ import com.ngatour.fruitclassifier.data.remote.SupabaseConfig
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.engine.okhttp.*
+import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
-import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
-import android.widget.Toast
 
 class AuthViewModel : ViewModel() {
     private val client = HttpClient(OkHttp) {
@@ -25,9 +25,15 @@ class AuthViewModel : ViewModel() {
         }
     }
 
-    fun login(email: String, password: String, context: Context, onSuccess: () -> Unit, onError: (String) -> Unit) {
+    fun login(
+        email: String,
+        password: String,
+        context: Context,
+        onSuccess: () -> Unit,
+        onError: (String) -> Unit
+    ) {
         if (email.isBlank() || password.isBlank()) {
-            onError("Email dan password tidak boleh kosong")
+            onError("Email and password must not be empty")
             return
         }
 
@@ -51,32 +57,38 @@ class AuthViewModel : ViewModel() {
                     // Save user data
                     val nameFromMetadata = auth.user?.user_metadata?.name
                     val email = auth.user?.email ?: "-"
-                    val name = nameFromMetadata ?: "Pengguna"
+                    val name = nameFromMetadata ?: "User"
 
                     UserPreferences(context).saveUser(name = name, email = email)
-
 
                     onSuccess()
 
                 } else {
-                    onError("Login gagal: ${response.bodyAsText()}")
+                    onError("Login failed: ${response.bodyAsText()}")
                 }
             } catch (e: Exception) {
-                onError("Terjadi kesalahan: ${e.localizedMessage}")
+                onError("An error occurred: ${e.localizedMessage}")
             }
         }
     }
 
-    fun register(email: String, password: String, name: String, context: Context, onSuccess: () -> Unit, onError: (String) -> Unit) {
+    fun register(
+        email: String,
+        password: String,
+        name: String,
+        context: Context,
+        onSuccess: () -> Unit,
+        onError: (String) -> Unit
+    ) {
         viewModelScope.launch {
             try {
-                val response: HttpResponse = client.post("${SupabaseConfig.AUTH_BASE_URL}signup")
-                {
+                val response: HttpResponse = client.post("${SupabaseConfig.AUTH_BASE_URL}signup") {
                     headers {
                         append("apikey", SupabaseConfig.API_KEY)
                         append("Content-Type", "application/json")
                     }
-                    setBody("""
+                    setBody(
+                        """
                         {
                             "email": "$email",
                             "password": "$password",
@@ -84,16 +96,17 @@ class AuthViewModel : ViewModel() {
                                 "name": "$name"
                             }
                         }
-                    """.trimIndent())
+                        """.trimIndent()
+                    )
                 }
 
                 if (response.status == HttpStatusCode.OK) {
                     onSuccess()
                 } else {
-                    onError("Registrasi gagal: ${response.status}")
+                    onError("Registration failed: ${response.status}")
                 }
             } catch (e: Exception) {
-                onError("Terjadi kesalahan: ${e.localizedMessage}")
+                onError("An error occurred: ${e.localizedMessage}")
             }
         }
     }
@@ -112,12 +125,12 @@ class AuthViewModel : ViewModel() {
                 if (response.status == HttpStatusCode.OK) {
                     onSuccess()
                 } else {
-                    Log.e("RESET", "Gagal kirim email: ${response.bodyAsText()}")
-                    Toast.makeText(context, "Gagal kirim email reset", Toast.LENGTH_SHORT).show()
+                    Log.e("RESET", "Failed to send reset email: ${response.bodyAsText()}")
+                    Toast.makeText(context, "Failed to send reset email", Toast.LENGTH_SHORT).show()
                 }
             } catch (e: Exception) {
                 Log.e("RESET", "Error: ${e.localizedMessage}")
-                Toast.makeText(context, "Terjadi kesalahan", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, "An error occurred", Toast.LENGTH_SHORT).show()
             }
         }
     }
@@ -136,10 +149,10 @@ class AuthViewModel : ViewModel() {
                 if (response.status == HttpStatusCode.OK) {
                     onSuccess()
                 } else {
-                    onError("Gagal mengirim email reset: ${response.bodyAsText()}")
+                    onError("Failed to send reset email: ${response.bodyAsText()}")
                 }
             } catch (e: Exception) {
-                onError("Error: ${e.localizedMessage}")
+                onError("An error occurred: ${e.localizedMessage}")
             }
         }
     }
