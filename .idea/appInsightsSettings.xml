@@ -8,10 +8,10 @@
             <InsightsFilterSettings>
               <option name="connection">
                 <ConnectionSetting>
-                  <option name="appId" value="PLACEHOLDER" />
-                  <option name="mobileSdkAppId" value="" />
-                  <option name="projectId" value="" />
-                  <option name="projectNumber" value="" />
+                  <option name="appId" value="com.ngatour.fruitclassifier" />
+                  <option name="mobileSdkAppId" value="1:719689452542:android:e743ac4f2c24442343ceaf" />
+                  <option name="projectId" value="fruitclassifierapp1" />
+                  <option name="projectNumber" value="719689452542" />
                 </ConnectionSetting>
               </option>
               <option name="signal" value="SIGNAL_UNSPECIFIED" />

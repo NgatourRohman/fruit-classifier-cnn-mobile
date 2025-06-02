@@ -6,6 +6,7 @@ plugins {
     alias(libs.plugins.kotlin.compose)
     kotlin("kapt")
     id("org.jetbrains.kotlin.plugin.serialization")
+    id ("com.google.gms.google-services")
 }
 
 android {
@@ -71,6 +72,9 @@ dependencies {
     implementation("io.ktor:ktor-client-serialization:2.3.3")
     implementation("io.ktor:ktor-serialization-kotlinx-json:2.3.3")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
+    implementation(platform("com.google.firebase:firebase-bom:33.14.0"))
+    implementation ("com.google.firebase:firebase-auth-ktx") // for Auth Supabase
+    implementation ("com.google.firebase:firebase-messaging-ktx") // opsional: push notif
 
 
     //Permission
