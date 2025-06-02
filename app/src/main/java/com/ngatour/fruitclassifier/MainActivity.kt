@@ -5,6 +5,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.core.view.WindowCompat
 import com.ngatour.fruitclassifier.data.pref.ThemePreferences
 import com.ngatour.fruitclassifier.ui.nav.MainNavigation
 import com.ngatour.fruitclassifier.ui.theme.FruitClassifierTheme
@@ -15,6 +16,8 @@ val LocalThemePreference = staticCompositionLocalOf<ThemePreferences> {
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
+        WindowCompat.setDecorFitsSystemWindows(window, false)
+        setTheme(R.style.Theme_FruitClassifier)
         super.onCreate(savedInstanceState)
 
         val prefs = ThemePreferences(this)
