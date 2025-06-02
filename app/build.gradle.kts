@@ -76,6 +76,8 @@ dependencies {
     implementation ("com.google.firebase:firebase-auth-ktx") // for Auth Supabase
     implementation ("com.google.firebase:firebase-messaging-ktx") // opsional: push notif
 
+    //Material 3
+    implementation("androidx.compose.material3:material3:1.3.2")
 
     //Permission
     implementation ("com.google.accompanist:accompanist-permissions:0.31.5-beta")
