@@ -16,6 +16,7 @@ import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
+import android.widget.Toast
 
 class AuthViewModel : ViewModel() {
     private val client = HttpClient(OkHttp) {
@@ -93,6 +94,30 @@ class AuthViewModel : ViewModel() {
                 }
             } catch (e: Exception) {
                 onError("Terjadi kesalahan: ${e.localizedMessage}")
+            }
+        }
+    }
+
+    fun forgotPassword(email: String, context: Context, onSuccess: () -> Unit) {
+        viewModelScope.launch {
+            try {
+                val response: HttpResponse = client.post("${SupabaseConfig.AUTH_BASE_URL}recover") {
+                    headers {
+                        append("apikey", SupabaseConfig.API_KEY)
+                        append(HttpHeaders.ContentType, "application/json")
+                    }
+                    setBody("""{"email":"$email"}""")
+                }
+
+                if (response.status == HttpStatusCode.OK) {
+                    onSuccess()
+                } else {
+                    Log.e("RESET", "Gagal kirim email: ${response.bodyAsText()}")
+                    Toast.makeText(context, "Gagal kirim email reset", Toast.LENGTH_SHORT).show()
+                }
+            } catch (e: Exception) {
+                Log.e("RESET", "Error: ${e.localizedMessage}")
+                Toast.makeText(context, "Terjadi kesalahan", Toast.LENGTH_SHORT).show()
             }
         }
     }

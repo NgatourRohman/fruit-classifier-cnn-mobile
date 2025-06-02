@@ -28,7 +28,21 @@ fun LoginScreen(navController: NavController, viewModel: AuthViewModel = AuthVie
         OutlinedTextField(value = email, onValueChange = { email = it }, label = { Text("Email") })
         OutlinedTextField(value = password, onValueChange = { password = it }, label = { Text("Password") }, visualTransformation = PasswordVisualTransformation())
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(8.dp))
+
+        TextButton(onClick = {
+            if (email.isBlank()) {
+                Toast.makeText(context, "Masukkan email terlebih dahulu", Toast.LENGTH_SHORT).show()
+            } else {
+                viewModel.forgotPassword(email, context) {
+                    Toast.makeText(context, "Link reset password dikirim ke email", Toast.LENGTH_LONG).show()
+                }
+            }
+        }) {
+            Text("Lupa password?")
+        }
+
+        Spacer(modifier = Modifier.height(8.dp))
 
         Button(onClick = {
             viewModel.login(
