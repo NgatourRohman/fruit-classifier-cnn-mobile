@@ -43,10 +43,8 @@ fun downloadModelFromUrl(context: Context, url: String, fileName: String): File?
 fun modelFilePath(context: Context, fileName: String): String {
     val file = File(context.filesDir, fileName)
 
-    // If it's already in filesDir, use it
     if (file.exists() && file.length() > 0) return file.absolutePath
 
-    // Fallback: try copying from assets if it's not there yet
     return try {
         context.assets.open(fileName).use { inputStream ->
             FileOutputStream(file).use { outputStream ->
@@ -64,7 +62,6 @@ fun modelFilePath(context: Context, fileName: String): String {
     }
 }
 
-
 fun isModelUpToDate(localFile: File, remoteUrl: String): Boolean {
     return try {
         val connection = URL(remoteUrl).openConnection()
@@ -73,24 +70,22 @@ fun isModelUpToDate(localFile: File, remoteUrl: String): Boolean {
         val localSize = localFile.length()
         localSize == remoteSize
     } catch (e: Exception) {
-        false // if it fails to check, consider updating
+        false
     }
 }
 
 fun classifyBitmap(context: Context, bitmap: Bitmap, modelName: String): ClassificationResult {
     val labels = listOf("Banana", "Mango", "Orange", "Pineapple", "Salak")
     val labelDescriptions = mapOf(
-        "Banana" to "Pisang diklasifikasikan berdasarkan bentuknya yang melengkung, kulit berwarna kuning cerah saat matang, dan permukaan yang relatif halus. Karakteristik ini memungkinkan model CNN mengenali pola tepi dan kontur khas buah pisang.",
-
-        "Mango" to "Mangga memiliki bentuk oval dengan warna kulit yang bervariasi dari hijau, kuning hingga kemerahan. Tekstur permukaan serta gradasi warna yang kompleks menjadi fitur penting dalam proses klasifikasi visual menggunakan CNN.",
-
-        "Orange" to "Jeruk diklasifikasikan melalui bentuknya yang bulat simetris dan tekstur permukaan berpori (berbintik halus). Warna oranye menyala dan pola pencahayaan pada kulit merupakan fitur visual utama yang diidentifikasi oleh CNN.",
-
-        "Pineapple" to "Nanas memiliki morfologi khas dengan permukaan bertekstur sisik dan warna campuran antara kuning dan hijau. CNN memanfaatkan pola geometris dari permukaan dan tajuk atas (mahkota) sebagai fitur utama klasifikasi.",
-
-        "Salak" to "Salak dikenal dari kulit bersisik berwarna coklat gelap dan bentuk menyerupai tetesan air. Pola tekstur unik pada kulit dan kontras warna tinggi menjadi aspek visual utama yang dikenali oleh CNN dalam membedakan buah ini."
+        "Banana" to "Banana is classified based on its curved shape, bright yellow skin when ripe, and relatively smooth surface. These characteristics allow CNN models to recognize edge and contour patterns unique to bananas.",
+        "Mango" to "Mangoes have an oval shape with skin colors ranging from green, yellow to reddish. Surface texture and complex color gradients are important features for visual classification using CNN.",
+        "Orange" to "Oranges are identified by their round symmetric shape and bumpy surface texture. The vibrant orange color and lighting pattern on the peel are key visual features recognized by CNN.",
+        "Pineapple" to "Pineapples have a distinct morphology with scaly textured surfaces and mixed yellow-green colors. CNN uses geometric patterns of the skin and crown as primary classification features.",
+        "Salak" to "Salak is known for its dark brown scaly skin and teardrop-like shape. The unique scale texture and strong color contrast are the main visual features CNN relies on to distinguish this fruit."
     )
 
+// Uncomment below to use extended label set (with translations)
+//
 //    val labels = listOf(
 //        "Banana",
 //        "Durian",
@@ -105,28 +100,28 @@ fun classifyBitmap(context: Context, bitmap: Bitmap, modelName: String): Classif
 //    )
 //
 //    val labelDescriptions = mapOf(
-//        "Banana" to "Pisang memiliki bentuk memanjang dan sedikit melengkung, dengan permukaan kulit yang halus dan berwarna kuning cerah saat matang. Model CNN mengenali pola kontur sederhana dan warna seragam sebagai ciri khasnya.",
+//        "Banana" to "Bananas have a long and slightly curved shape with smooth yellow skin when ripe. CNN models recognize its simple contour and uniform color as key features.",
 //
-//        "Durian" to "Durian dikenal dari bentuk bulat besar dan kulit berduri tajam berwarna hijau atau cokelat kehijauan. Tekstur berduri yang unik dan bayangan antar duri menjadi fitur visual penting bagi CNN.",
+//        "Durian" to "Durian is recognized by its large round shape and sharp greenish spines. The spiky texture and shadow between spikes are strong CNN indicators.",
 //
-//        "Guava" to "Jambu biji memiliki bentuk bulat hingga oval, permukaan kulit bertekstur halus dengan warna hijau atau kekuningan. CNN mendeteksi tepi lembut dan gradasi warna lembut sebagai fitur pembeda.",
+//        "Guava" to "Guavas are round to oval with soft-textured green or yellowish skin. CNN detects soft edges and subtle color gradients.",
 //
-//        "Mango" to "Mangga berbentuk oval atau lonjong dengan warna kulit yang bervariasi dari hijau, kuning, hingga merah jingga. CNN mengandalkan kombinasi gradasi warna dan siluet buah untuk klasifikasi.",
+//        "Mango" to "Mangoes are oval-shaped with skin tones from green to orange-red. CNN learns to classify based on silhouette and complex gradient colors.",
 //
-//        "Mangosteen" to "Manggis memiliki kulit luar berwarna ungu tua dengan bentuk bulat sempurna. Fitur visual seperti warna pekat dan mahkota kecil di atas buah menjadi penanda utama untuk model CNN.",
+//        "Mangosteen" to "Mangosteens are perfectly round with deep purple skin and a small crown. CNN relies on its rich color and top crown as visual markers.",
 //
-//        "Orange" to "Jeruk bulat dengan permukaan kulit berpori dan warna oranye terang. CNN mengenali pola tekstur kulit dan saturasi warna yang khas untuk mengidentifikasi buah ini.",
+//        "Orange" to "Oranges are round with porous bright orange skin. CNN captures the surface texture and distinctive saturation.",
 //
-//        "Papaya" to "Pepaya berbentuk lonjong besar dengan kulit hijau saat mentah dan kuning-oranye saat matang. Model CNN memanfaatkan ukuran proporsional, bentuk memanjang, dan warna gradien sebagai fitur klasifikasi.",
+//        "Papaya" to "Papayas are large and oval with green-to-orange skin as it ripens. CNN uses its long shape, proportions, and smooth gradients.",
 //
-//        "Pineapple" to "Nanas memiliki kulit bersisik berpola heksagonal dan tajuk daun di bagian atas. CNN mengenali pola geometri sisik dan warna kontras kuning-hijau sebagai ciri utama.",
+//        "Pineapple" to "Pineapples have hexagonal scale-like skin with a leaf crown. CNN identifies its geometric texture and high yellow-green contrast.",
 //
-//        "Rambutan" to "Rambutan berbentuk bulat kecil dengan rambut-rambut lembut di kulitnya. CNN menggunakan fitur visual unik seperti tekstur rambut dan warna merah terang sebagai indikator.",
+//        "Rambutan" to "Rambutans are small round fruits with soft hairs on their red skin. CNN uses the unique hairy texture and vivid color.",
 //
-//        "Salak" to "Salak memiliki bentuk lonjong seperti tetesan air, dengan kulit bersisik berwarna cokelat gelap. Pola sisik dan permukaan reflektif menjadi ciri khas yang diidentifikasi CNN."
+//        "Salak" to "Salak (snake fruit) is teardrop-shaped with dark brown scaly skin. CNN recognizes the high-contrast, scale-like surface."
 //    )
 
-    val threshold = 0.75f // Minimum confidence that is considered valid
+    val threshold = 0.75f
 
     val module = Module.load(modelFilePath(context, modelName))
     val safeBitmap = convertToMutableBitmap(bitmap)
@@ -146,21 +141,21 @@ fun classifyBitmap(context: Context, bitmap: Bitmap, modelName: String): Classif
     val rawScores = outputTensor.dataAsFloatArray
     val probs = softmax(rawScores)
     val maxIdx = probs.indices.maxByOrNull { probs[it] } ?: -1
-    val confidenceRaw = probs[maxIdx] // still within 0.0 - 1.0
+    val confidenceRaw = probs[maxIdx]
     val confidencePercent = confidenceRaw * 100
 
     val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
     val timestamp = dateFormat.format(Date())
 
     return if (confidenceRaw >= threshold) {
-        val label = labels.getOrElse(maxIdx) { "Tidak Dikenal" }
-        val description = labelDescriptions[label] ?: "Tidak ada deskripsi."
+        val label = labels.getOrElse(maxIdx) { "Unknown" }
+        val description = labelDescriptions[label] ?: "No description available."
         ClassificationResult(label, confidencePercent, description, duration, timestamp)
     } else {
         ClassificationResult(
-            label = "Tidak dikenali",
+            label = "Not recognized",
             confidence = confidencePercent,
-            description = "Gambar tidak sesuai dengan kelas buah yang telah dikenali.",
+            description = "The image does not match any known fruit class.",
             processTimeMs = duration,
             timestamp = timestamp
         )
