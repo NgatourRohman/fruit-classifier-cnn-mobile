@@ -90,6 +90,7 @@ fun RegisterScreen(navController: NavController, viewModel: AuthViewModel = Auth
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
+                    .fillMaxHeight(0.90f)
                     .align(Alignment.Center)
                     .padding(horizontal = 24.dp),
                 horizontalAlignment = Alignment.CenterHorizontally

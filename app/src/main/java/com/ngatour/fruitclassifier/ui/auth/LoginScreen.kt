@@ -88,6 +88,7 @@ fun LoginScreen(navController: NavController, viewModel: AuthViewModel = AuthVie
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
+                    .fillMaxHeight(0.90f)
                     .padding(horizontal = 24.dp)
                     .align(Alignment.Center),
                 horizontalAlignment = Alignment.CenterHorizontally
@@ -121,12 +122,7 @@ fun LoginScreen(navController: NavController, viewModel: AuthViewModel = AuthVie
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(vertical = 4.dp)
-                        .shadow(
-                            elevation = 6.dp,
-                            shape = RoundedCornerShape(16.dp),
-                            ambientColor = Color.Gray.copy(alpha = 0.3f),
-                            spotColor = Color.Black.copy(alpha = 0.3f)
-                        ),
+                        .shadow(6.dp, RoundedCornerShape(16.dp)),
                     shape = RoundedCornerShape(16.dp),
                     colors = OutlinedTextFieldDefaults.colors(
                         focusedBorderColor = Color.Transparent,
@@ -155,12 +151,7 @@ fun LoginScreen(navController: NavController, viewModel: AuthViewModel = AuthVie
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(vertical = 4.dp)
-                        .shadow(
-                            elevation = 6.dp,
-                            shape = RoundedCornerShape(16.dp),
-                            ambientColor = Color.Gray.copy(alpha = 0.3f),
-                            spotColor = Color.Black.copy(alpha = 0.3f)
-                        ),
+                        .shadow(6.dp, RoundedCornerShape(16.dp)),
                     shape = RoundedCornerShape(16.dp),
                     colors = OutlinedTextFieldDefaults.colors(
                         focusedBorderColor = Color.Transparent,
@@ -233,10 +224,7 @@ fun LoginScreen(navController: NavController, viewModel: AuthViewModel = AuthVie
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(56.dp)
-                        .shadow(
-                            elevation = 8.dp,
-                            shape = RoundedCornerShape(16.dp)
-                        ),
+                        .shadow(8.dp, RoundedCornerShape(16.dp)),
                     shape = RoundedCornerShape(16.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFF6F00))
                 ) {
