@@ -22,7 +22,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
@@ -37,7 +36,9 @@ import com.ngatour.fruitclassifier.ui.classify.components.SupportedFruitIcons
 import com.ngatour.fruitclassifier.ui.theme.Poppins
 import com.ngatour.fruitclassifier.util.classifyBitmap
 import com.ngatour.fruitclassifier.util.saveBitmapToCache
+import com.ngatour.fruitclassifier.util.uploadImageToSupabaseStorage
 import com.ngatour.fruitclassifier.util.uriToBitmap
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
@@ -82,9 +83,9 @@ fun FruitClassifierScreen(viewModel: HistoryViewModel) {
             .background(Color(0xFFFFF3E0))
             .padding(24.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Top // bisa pakai .spacedBy() juga kalau mau
+        verticalArrangement = Arrangement.Top
     ) {
-        Spacer(modifier = Modifier.height(25.dp)) // ini yang bikin isi agak turun
+        Spacer(modifier = Modifier.height(25.dp))
         Text("Fruit Classifier", fontFamily = Poppins, fontWeight = FontWeight.Bold, fontSize = 20.sp)
 
         if (result == null) {
@@ -187,11 +188,24 @@ fun FruitClassifierScreen(viewModel: HistoryViewModel) {
 
             Spacer(modifier = Modifier.height(24.dp))
 
+            val coroutineScope = rememberCoroutineScope()
+
             Button(
                 onClick = {
-                    viewModel.saveToHistory(result!!)
-                    viewModel.uploadToSupabaseSingle(result!!, context)
-                    Toast.makeText(context, "Result saved", Toast.LENGTH_SHORT).show()
+                    coroutineScope.launch {
+                        if (result != null && imageUri != null) {
+                            val imageUrl = uploadImageToSupabaseStorage(context, imageUri!!)
+                            if (imageUrl != null) {
+                                viewModel.saveToHistory(result!!, imageUrl)
+                                viewModel.uploadToSupabaseSingle(result!!, imageUrl, context)
+                                Toast.makeText(context, "Result saved & uploaded", Toast.LENGTH_SHORT).show()
+                            } else {
+                                Toast.makeText(context, "Failed to upload image", Toast.LENGTH_SHORT).show()
+                            }
+                        } else {
+                            Toast.makeText(context, "Result or image not found", Toast.LENGTH_SHORT).show()
+                        }
+                    }
                 },
                 modifier = Modifier
                     .fillMaxWidth()
@@ -202,6 +216,7 @@ fun FruitClassifierScreen(viewModel: HistoryViewModel) {
             ) {
                 Text("Save Result", color = Color.White, fontFamily = Poppins, fontWeight = FontWeight.Bold)
             }
+
 
             Spacer(modifier = Modifier.height(12.dp))
 

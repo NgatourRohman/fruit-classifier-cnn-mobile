@@ -10,8 +10,16 @@ import android.graphics.YuvImage
 import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
+import android.util.Log
 import androidx.camera.core.ImageProxy
+import com.ngatour.fruitclassifier.data.remote.SupabaseClient
+import com.ngatour.fruitclassifier.data.remote.SupabaseConfig
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.RequestBody.Companion.asRequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.ByteArrayOutputStream
+import java.io.File
+import java.io.FileOutputStream
 
 fun uriToBitmap(context: Context, uri: Uri): Bitmap {
     return if (Build.VERSION.SDK_INT < 28) {
@@ -46,3 +54,43 @@ fun ImageProxy.toBitmap(): Bitmap? {
 fun convertToMutableBitmap(source: Bitmap): Bitmap {
     return source.copy(Bitmap.Config.ARGB_8888, true)
 }
+
+suspend fun uploadBitmapToSupabase(context: Context, bitmap: Bitmap): String? {
+    val file = File(context.cacheDir, "temp_image_${System.currentTimeMillis()}.jpg")
+    bitmap.compress(Bitmap.CompressFormat.JPEG, 90, FileOutputStream(file))
+
+    val requestBody = file.asRequestBody("image/jpeg".toMediaTypeOrNull())
+    val fileName = file.name
+
+    return try {
+        val response = SupabaseClient.storage.uploadImage("classified-image", fileName, requestBody)
+        if (response.isSuccessful) {
+            "${SupabaseConfig.STORAGE_PUBLIC_URL}/storage/v1/object/public/classified-image/$fileName"
+        } else null
+    } catch (e: Exception) {
+        Log.e("UploadBitmap", "Gagal upload bitmap: ${e.message}")
+        null
+    }
+}
+
+suspend fun uploadImageToSupabaseStorage(context: Context, imageUri: Uri): String? {
+    val contentResolver = context.contentResolver
+    val inputStream = contentResolver.openInputStream(imageUri)
+    val fileName = "classified_${System.currentTimeMillis()}.jpg"
+
+    return try {
+        val requestBody = inputStream?.readBytes()?.toRequestBody("image/jpeg".toMediaTypeOrNull())
+        val response = SupabaseClient.storage.uploadImage("classified-image", fileName, requestBody!!)
+        if (response.isSuccessful) {
+            "${SupabaseConfig.STORAGE_PUBLIC_URL}/storage/v1/object/public/classified-image/$fileName"
+        } else {
+            Log.e("UPLOAD", "Response failed: ${response.code()} - ${response.errorBody()?.string()}")
+            null
+        }
+    } catch (e: Exception) {
+        Log.e("UPLOAD", "Exception: ${e.message}")
+        null
+    }
+}
+
+

@@ -5,6 +5,8 @@ data class SupabaseHistory(
     val confidence: Float,
     val description: String,
     val timestamp: String,
-    val username: String
+    val username: String,
+    val imageUrl: String,
+    val processTimeMs: Long
 )
 

@@ -98,8 +98,9 @@ fun StatsScreen(viewModel: HistoryViewModel) {
             Button(onClick = {
                 result.detailedResults.forEach {
                     if (it.label != "Tidak dikenali") {
-                        viewModel.saveToHistory(it)
-                        viewModel.uploadToSupabaseSingle(it, context) // upload otomatis
+                        val imageUrl = "-"
+                        viewModel.saveToHistory(it, imageUrl)
+                        viewModel.uploadToSupabaseSingle(it, imageUrl, context)
                     }
                 }
                 Toast.makeText(context, "Berhasil disimpan & diunggah", Toast.LENGTH_SHORT).show()

@@ -26,4 +26,13 @@ object SupabaseClient {
         .build()
 
     val api: SupabaseService = retrofit.create(SupabaseService::class.java)
+    val storage: SupabaseService = Retrofit.Builder()
+        .baseUrl(SupabaseConfig.STORAGE_BASE_URL)
+        .client(client)
+        .addConverterFactory(GsonConverterFactory.create())
+        .build()
+        .create(SupabaseService::class.java)
+
+    val baseUrl: String
+        get() = SupabaseConfig.BASE_URL
 }

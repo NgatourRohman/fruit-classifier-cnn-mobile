@@ -1,5 +1,6 @@
 package com.ngatour.fruitclassifier.ui.live
 
+import android.util.Log
 import androidx.camera.core.*
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
@@ -16,6 +17,10 @@ import androidx.core.graphics.scale
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.ngatour.fruitclassifier.data.viewmodel.HistoryViewModel
 import com.ngatour.fruitclassifier.util.classifyBitmap
+import com.ngatour.fruitclassifier.util.uploadBitmapToSupabase
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 @Composable
 fun LiveCameraScreen(viewModel: HistoryViewModel) {
@@ -38,19 +43,32 @@ fun LiveCameraScreen(viewModel: HistoryViewModel) {
             .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
             .build()
 
+        val analyzerScope = CoroutineScope(Dispatchers.IO)
+
         imageAnalyzer.setAnalyzer(Executors.newSingleThreadExecutor()) { imageProxy ->
             val bitmap = imageProxy.toBitmap()
             if (bitmap != null) {
                 val resized = bitmap.scale(224, 224)
                 val result = classifyBitmap(context, resized, "model_fruit_mobile.pt")
 
-                if (result.label != "Tidak dikenali") {
-                    viewModel.saveToHistory(result)
-                    viewModel.uploadToSupabaseSingle(result, context)
+                analyzerScope.launch {
+                    if (result.label != "Tidak dikenali") {
+                        try {
+                            val imageUrl = uploadBitmapToSupabase(context, bitmap)
+
+                            if (imageUrl != null) {
+                                viewModel.saveToHistory(result, imageUrl)
+                                viewModel.uploadToSupabaseSingle(result, imageUrl, context)
+                            } else {
+                                Log.e("CAMERA_UPLOAD", "Gagal upload gambar (imageUrl null)")
+                            }
+                        } catch (e: Exception) {
+                            Log.e("CAMERA_UPLOAD", "Gagal upload gambar: ${e.message}")
+                        }
+                    }
                 }
 
                 resultText.value = "Label: ${result.label} - ${"%.2f".format(result.confidence)}%"
-
             }
             imageProxy.close()
         }

@@ -3,7 +3,6 @@ package com.ngatour.fruitclassifier.data.viewmodel
 import android.app.Application
 import android.content.Context
 import android.util.Log
-import android.widget.Toast
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.ngatour.fruitclassifier.data.db.AppDatabase
@@ -19,7 +18,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import java.io.File
-import java.net.URLEncoder
 
 class HistoryViewModel(application: Application) : AndroidViewModel(application) {
     private val dao = AppDatabase.Companion.getDatabase(application).historyDao()
@@ -33,19 +31,22 @@ class HistoryViewModel(application: Application) : AndroidViewModel(application)
         }
     }
 
-    fun saveToHistory(result: ClassificationResult) {
-        val prefs = UserPreferences(getApplication()) // Context dari AndroidViewModel
+    fun saveToHistory(result: ClassificationResult, imageUrl: String) {
+        val prefs = UserPreferences(getApplication())
         val item = ClassificationHistoryEntity(
             label = result.label,
             confidence = result.confidence,
             description = result.description,
             timestamp = result.timestamp,
-            userName = prefs.name // ← Retrieve active user name
+            userName = prefs.name,
+            imageUrl = imageUrl,
+            processTimeMs = result.processTimeMs
         )
         viewModelScope.launch(Dispatchers.IO) {
             dao.insert(item)
         }
     }
+
 
     fun deleteById(entity: ClassificationHistoryEntity) {
         viewModelScope.launch {
@@ -132,9 +133,12 @@ class HistoryViewModel(application: Application) : AndroidViewModel(application)
                                 confidence = it.confidence,
                                 description = it.description,
                                 timestamp = it.timestamp,
-                                userName = it.username
+                                userName = it.username,
+                                imageUrl = it.imageUrl,
+                                processTimeMs = it.processTimeMs
                             )
                         )
+
                     } catch (e: Exception) {
                         // possible duplicates, skip it
                     }
@@ -145,24 +149,31 @@ class HistoryViewModel(application: Application) : AndroidViewModel(application)
         }
     }
 
-    fun uploadToSupabaseSingle(result: ClassificationResult, context: Context) {
+    fun uploadToSupabaseSingle(result: ClassificationResult, imageUrl: String, context: Context) {
         val username = UserPreferences(context).name
 
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 val service = SupabaseClient.retrofit.create(SupabaseService::class.java)
-
                 val uploadData = SupabaseHistory(
                     label = result.label,
                     confidence = result.confidence,
                     description = result.description,
                     timestamp = result.timestamp,
-                    username = username
+                    username = username,
+                    imageUrl = imageUrl,
+                    processTimeMs = result.processTimeMs
                 )
-                service.uploadHistory(listOf(uploadData)) // use list for bulk POST
+                val response = service.uploadHistory(listOf(uploadData))
+                Log.d("UPLOAD", "Supabase response: ${response.code()}")
+                if (!response.isSuccessful) {
+                    Log.e("UPLOAD", "Supabase error: ${response.errorBody()?.string()}")
+                }
             } catch (e: Exception) {
                 Log.e("UPLOAD", "Gagal upload: ${e.localizedMessage}")
             }
         }
     }
+
+
 }

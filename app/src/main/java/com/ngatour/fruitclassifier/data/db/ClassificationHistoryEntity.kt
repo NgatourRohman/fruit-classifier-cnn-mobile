@@ -14,5 +14,7 @@ data class ClassificationHistoryEntity(
     val confidence: Float,
     val description: String,
     val timestamp: String,
-    val userName: String
+    val userName: String,
+    val imageUrl: String,
+    val processTimeMs: Long
 )
