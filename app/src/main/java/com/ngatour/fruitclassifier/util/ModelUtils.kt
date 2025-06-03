@@ -80,12 +80,51 @@ fun isModelUpToDate(localFile: File, remoteUrl: String): Boolean {
 fun classifyBitmap(context: Context, bitmap: Bitmap, modelName: String): ClassificationResult {
     val labels = listOf("Banana", "Mango", "Orange", "Pineapple", "Salak")
     val labelDescriptions = mapOf(
-        "Banana" to "Pisang adalah buah tropis yang kaya potasium dan vitamin B6.",
-        "Mango" to "Mangga memiliki rasa manis dan tekstur lembut, kaya akan vitamin C.",
-        "Orange" to "Jeruk merupakan sumber vitamin C, biasa dikonsumsi sebagai jus.",
-        "Pineapple" to "Nanas memiliki rasa asam-manis dan tinggi enzim bromelain.",
-        "Salak" to "Salak atau snake fruit memiliki rasa manis dan sedikit sepat."
+        "Banana" to "Pisang diklasifikasikan berdasarkan bentuknya yang melengkung, kulit berwarna kuning cerah saat matang, dan permukaan yang relatif halus. Karakteristik ini memungkinkan model CNN mengenali pola tepi dan kontur khas buah pisang.",
+
+        "Mango" to "Mangga memiliki bentuk oval dengan warna kulit yang bervariasi dari hijau, kuning hingga kemerahan. Tekstur permukaan serta gradasi warna yang kompleks menjadi fitur penting dalam proses klasifikasi visual menggunakan CNN.",
+
+        "Orange" to "Jeruk diklasifikasikan melalui bentuknya yang bulat simetris dan tekstur permukaan berpori (berbintik halus). Warna oranye menyala dan pola pencahayaan pada kulit merupakan fitur visual utama yang diidentifikasi oleh CNN.",
+
+        "Pineapple" to "Nanas memiliki morfologi khas dengan permukaan bertekstur sisik dan warna campuran antara kuning dan hijau. CNN memanfaatkan pola geometris dari permukaan dan tajuk atas (mahkota) sebagai fitur utama klasifikasi.",
+
+        "Salak" to "Salak dikenal dari kulit bersisik berwarna coklat gelap dan bentuk menyerupai tetesan air. Pola tekstur unik pada kulit dan kontras warna tinggi menjadi aspek visual utama yang dikenali oleh CNN dalam membedakan buah ini."
     )
+
+//    val labels = listOf(
+//        "Banana",
+//        "Durian",
+//        "Guava",
+//        "Mango",
+//        "Mangosteen",
+//        "Orange",
+//        "Papaya",
+//        "Pineapple",
+//        "Rambutan",
+//        "Salak"
+//    )
+//
+//    val labelDescriptions = mapOf(
+//        "Banana" to "Pisang memiliki bentuk memanjang dan sedikit melengkung, dengan permukaan kulit yang halus dan berwarna kuning cerah saat matang. Model CNN mengenali pola kontur sederhana dan warna seragam sebagai ciri khasnya.",
+//
+//        "Durian" to "Durian dikenal dari bentuk bulat besar dan kulit berduri tajam berwarna hijau atau cokelat kehijauan. Tekstur berduri yang unik dan bayangan antar duri menjadi fitur visual penting bagi CNN.",
+//
+//        "Guava" to "Jambu biji memiliki bentuk bulat hingga oval, permukaan kulit bertekstur halus dengan warna hijau atau kekuningan. CNN mendeteksi tepi lembut dan gradasi warna lembut sebagai fitur pembeda.",
+//
+//        "Mango" to "Mangga berbentuk oval atau lonjong dengan warna kulit yang bervariasi dari hijau, kuning, hingga merah jingga. CNN mengandalkan kombinasi gradasi warna dan siluet buah untuk klasifikasi.",
+//
+//        "Mangosteen" to "Manggis memiliki kulit luar berwarna ungu tua dengan bentuk bulat sempurna. Fitur visual seperti warna pekat dan mahkota kecil di atas buah menjadi penanda utama untuk model CNN.",
+//
+//        "Orange" to "Jeruk bulat dengan permukaan kulit berpori dan warna oranye terang. CNN mengenali pola tekstur kulit dan saturasi warna yang khas untuk mengidentifikasi buah ini.",
+//
+//        "Papaya" to "Pepaya berbentuk lonjong besar dengan kulit hijau saat mentah dan kuning-oranye saat matang. Model CNN memanfaatkan ukuran proporsional, bentuk memanjang, dan warna gradien sebagai fitur klasifikasi.",
+//
+//        "Pineapple" to "Nanas memiliki kulit bersisik berpola heksagonal dan tajuk daun di bagian atas. CNN mengenali pola geometri sisik dan warna kontras kuning-hijau sebagai ciri utama.",
+//
+//        "Rambutan" to "Rambutan berbentuk bulat kecil dengan rambut-rambut lembut di kulitnya. CNN menggunakan fitur visual unik seperti tekstur rambut dan warna merah terang sebagai indikator.",
+//
+//        "Salak" to "Salak memiliki bentuk lonjong seperti tetesan air, dengan kulit bersisik berwarna cokelat gelap. Pola sisik dan permukaan reflektif menjadi ciri khas yang diidentifikasi CNN."
+//    )
 
     val threshold = 0.75f // Minimum confidence that is considered valid
 
