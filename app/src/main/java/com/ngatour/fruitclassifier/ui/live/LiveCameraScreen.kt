@@ -9,13 +9,17 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import java.util.concurrent.Executors
 import androidx.core.graphics.scale
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.ngatour.fruitclassifier.data.viewmodel.HistoryViewModel
+import com.ngatour.fruitclassifier.ui.theme.Poppins
 import com.ngatour.fruitclassifier.util.classifyBitmap
 import com.ngatour.fruitclassifier.util.uploadBitmapToSupabase
 import kotlinx.coroutines.CoroutineScope
@@ -26,7 +30,9 @@ import kotlinx.coroutines.launch
 fun LiveCameraScreen(viewModel: HistoryViewModel) {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
-    val resultText = remember { mutableStateOf("Menunggu klasifikasi...") }
+//    val resultText = remember { mutableStateOf("Waiting for classification...") }
+    val label = remember { mutableStateOf<String?>(null) }
+    val confidence = remember { mutableStateOf<Float?>(null) }
 
     val cameraProviderFuture = remember { ProcessCameraProvider.getInstance(context) }
     val previewView = remember { PreviewView(context) }
@@ -52,7 +58,7 @@ fun LiveCameraScreen(viewModel: HistoryViewModel) {
                 val result = classifyBitmap(context, resized, "model_fruit_mobile.pt")
 
                 analyzerScope.launch {
-                    if (result.label != "Tidak dikenali") {
+                    if (result.label != "Not recognized") {
                         try {
                             val imageUrl = uploadBitmapToSupabase(context, bitmap)
 
@@ -60,15 +66,16 @@ fun LiveCameraScreen(viewModel: HistoryViewModel) {
                                 viewModel.saveToHistory(result, imageUrl)
                                 viewModel.uploadToSupabaseSingle(result, imageUrl, context)
                             } else {
-                                Log.e("CAMERA_UPLOAD", "Gagal upload gambar (imageUrl null)")
+                                Log.e("CAMERA_UPLOAD", "Failed to upload image (imageUrl null)")
                             }
                         } catch (e: Exception) {
-                            Log.e("CAMERA_UPLOAD", "Gagal upload gambar: ${e.message}")
+                            Log.e("CAMERA_UPLOAD", "Failed to upload image: ${e.message}")
                         }
                     }
                 }
 
-                resultText.value = "Label: ${result.label} - ${"%.2f".format(result.confidence)}%"
+                label.value = result.label
+                confidence.value = result.confidence
             }
             imageProxy.close()
         }
@@ -85,9 +92,34 @@ fun LiveCameraScreen(viewModel: HistoryViewModel) {
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(12.dp),
-            elevation = CardDefaults.cardElevation(6.dp)
+            elevation = CardDefaults.cardElevation(6.dp),
+            colors = CardDefaults.cardColors(containerColor = Color(0xFFFFF3E0))
         ) {
-            Text(resultText.value, modifier = Modifier.padding(12.dp))
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    text = "Predicted Fruit",
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Bold,
+                    fontFamily = Poppins,
+                    color = Color.Black
+                )
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = if (label.value != null && confidence.value != null)
+                        "${label.value} (Confidence: ${"%.2f".format(confidence.value!!)}%)"
+                    else
+                        "Waiting for classification...",
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Normal,
+                    fontFamily = Poppins,
+                    color = Color.DarkGray
+                )
+            }
         }
     }
 }
