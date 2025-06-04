@@ -1,14 +1,17 @@
 package com.ngatour.fruitclassifier.ui.nav
 
+import androidx.compose.animation.*
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.currentBackStackEntryAsState
-import androidx.navigation.compose.rememberNavController
+import com.google.accompanist.navigation.animation.AnimatedNavHost
+import com.google.accompanist.navigation.animation.composable
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import androidx.navigation.compose.rememberNavController
+import androidx.navigation.compose.currentBackStackEntryAsState
 import com.ngatour.fruitclassifier.data.viewmodel.HistoryViewModel
 import com.ngatour.fruitclassifier.ui.auth.LoginScreen
 import com.ngatour.fruitclassifier.ui.auth.RegisterScreen
@@ -19,12 +22,10 @@ import com.ngatour.fruitclassifier.ui.live.LiveCameraScreen
 import com.ngatour.fruitclassifier.ui.profile.ProfileScreen
 import com.ngatour.fruitclassifier.ui.splash.SplashScreen
 import com.ngatour.fruitclassifier.ui.results.ResultsScreen
-import androidx.compose.material3.Scaffold
-import androidx.compose.ui.graphics.Color
 import com.ngatour.fruitclassifier.ui.about.AboutAppScreen
 import com.ngatour.fruitclassifier.ui.about.AboutDeveloperScreen
 
-@OptIn(ExperimentalPermissionsApi::class)
+@OptIn(ExperimentalPermissionsApi::class, ExperimentalAnimationApi::class)
 @Composable
 fun MainNavigation(isDarkMode: Boolean, onThemeToggle: () -> Unit) {
     val navController = rememberNavController()
@@ -64,10 +65,22 @@ fun MainNavigation(isDarkMode: Boolean, onThemeToggle: () -> Unit) {
             }
         }
     ) { padding ->
-        NavHost(
+        AnimatedNavHost(
             navController = navController,
             startDestination = Screen.Splash.route,
-            modifier = Modifier.padding(padding)
+            modifier = Modifier.padding(padding),
+            enterTransition = {
+                slideInHorizontally(initialOffsetX = { 1000 }) + fadeIn()
+            },
+            exitTransition = {
+                slideOutHorizontally(targetOffsetX = { -1000 }) + fadeOut()
+            },
+            popEnterTransition = {
+                slideInHorizontally(initialOffsetX = { -1000 }) + fadeIn()
+            },
+            popExitTransition = {
+                slideOutHorizontally(targetOffsetX = { 1000 }) + fadeOut()
+            }
         ) {
             composable(Screen.Splash.route) {
                 SplashScreen(navController)

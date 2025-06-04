@@ -84,6 +84,9 @@ dependencies {
     //Permission
     implementation ("com.google.accompanist:accompanist-permissions:0.31.5-beta")
 
+    //Navigation
+    implementation ("com.google.accompanist:accompanist-navigation-animation:0.31.5-beta")
+
     //PyTorch
     implementation("org.pytorch:pytorch_android:1.13.1")
     implementation("org.pytorch:pytorch_android_torchvision:1.13.1")
