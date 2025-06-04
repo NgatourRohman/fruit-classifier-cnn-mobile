@@ -20,7 +20,7 @@ import com.ngatour.fruitclassifier.ui.profile.ProfileScreen
 import com.ngatour.fruitclassifier.ui.settings.AboutScreen
 import com.ngatour.fruitclassifier.ui.settings.SettingsScreen
 import com.ngatour.fruitclassifier.ui.splash.SplashScreen
-import com.ngatour.fruitclassifier.ui.stats.StatsScreen
+import com.ngatour.fruitclassifier.ui.results.ResultsScreen
 import androidx.compose.material3.Scaffold
 import androidx.compose.ui.graphics.Color
 
@@ -88,7 +88,7 @@ fun MainNavigation(isDarkMode: Boolean, onThemeToggle: () -> Unit) {
                 LiveCameraScreen(viewModel = viewModel)
             }
             composable(Screen.Stats.route) {
-                StatsScreen(viewModel = viewModel)
+                ResultsScreen(viewModel = viewModel)
             }
             composable(Screen.Settings.route) {
                 SettingsScreen(

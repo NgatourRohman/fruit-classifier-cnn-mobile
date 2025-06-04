@@ -59,7 +59,7 @@ fun HistoryScreen(viewModel: HistoryViewModel) {
                     val isExpanded = item.id == expandedItemId
 
                     val imageSize by animateDpAsState(
-                        targetValue = if (isExpanded) 100.dp else 56.dp,
+                        targetValue = if (isExpanded) 90.dp else 56.dp,
                         label = "ImageSizeAnim"
                     )
 
