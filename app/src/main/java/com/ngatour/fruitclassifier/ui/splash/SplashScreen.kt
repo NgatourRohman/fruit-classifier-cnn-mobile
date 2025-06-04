@@ -8,19 +8,18 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Image
-import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.ngatour.fruitclassifier.R
+import com.ngatour.fruitclassifier.data.auth.SessionManager
 import com.ngatour.fruitclassifier.ui.nav.Screen
 import com.ngatour.fruitclassifier.ui.theme.Poppins
 import kotlinx.coroutines.delay
@@ -28,14 +27,23 @@ import kotlinx.coroutines.delay
 @Composable
 fun SplashScreen(navController: NavController) {
     val visible = remember { mutableStateOf(false) }
+    val context = LocalContext.current
+    val session = SessionManager(context)
 
     LaunchedEffect(Unit) {
         visible.value = true
         delay(2000)
-        navController.navigate(Screen.Login.route) {
-            popUpTo(Screen.Splash.route) { inclusive = true }
+        if (session.isLoggedIn()) {
+            navController.navigate(Screen.Classify.route) {
+                popUpTo(Screen.Splash.route) { inclusive = true }
+            }
+        } else {
+            navController.navigate(Screen.Login.route) {
+                popUpTo(Screen.Splash.route) { inclusive = true }
+            }
         }
     }
+
 
     Box(
         modifier = Modifier

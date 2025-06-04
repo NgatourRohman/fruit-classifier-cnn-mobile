@@ -32,6 +32,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.ngatour.fruitclassifier.R
 import com.ngatour.fruitclassifier.data.auth.AuthViewModel
+import com.ngatour.fruitclassifier.data.auth.SessionManager
 import com.ngatour.fruitclassifier.ui.nav.Screen
 import com.ngatour.fruitclassifier.ui.theme.Poppins
 
@@ -215,7 +216,13 @@ fun LoginScreen(navController: NavController, viewModel: AuthViewModel = AuthVie
                     onClick = {
                         viewModel.login(
                             email, password, context,
-                            onSuccess = { navController.navigate(Screen.Classify.route) },
+                            onSuccess = {
+                                if (rememberMe) {
+                                    val token = "logged_in"
+                                    SessionManager(context).saveToken(token)
+                                }
+                                navController.navigate(Screen.Classify.route)
+                            },
                             onError = { msg ->
                                 Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
                             }

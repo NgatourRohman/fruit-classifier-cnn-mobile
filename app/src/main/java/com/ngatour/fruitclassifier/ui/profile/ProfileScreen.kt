@@ -19,6 +19,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.ngatour.fruitclassifier.LocalThemePreference
+import com.ngatour.fruitclassifier.data.auth.SessionManager
 import com.ngatour.fruitclassifier.data.pref.UserPreferences
 import com.ngatour.fruitclassifier.data.remote.SupabaseConfig
 import com.ngatour.fruitclassifier.data.viewmodel.HistoryViewModel
@@ -48,6 +49,8 @@ fun ProfileScreen(
     val themePrefs = LocalThemePreference.current
     var isDarkMode by remember { mutableStateOf(themePrefs.isDarkMode) }
     var showDialog by remember { mutableStateOf(false) }
+    val session = SessionManager(context)
+
 
     if (showDialog) {
         AlertDialog(
@@ -218,5 +221,24 @@ fun ProfileScreen(
             navController.navigate(Screen.AboutDeveloper.route)
         }
 
+        Spacer(modifier = Modifier.height(32.dp))
+
+        Button(
+            onClick = {
+                session.clear()
+                Toast.makeText(context, "Logged out successfully", Toast.LENGTH_SHORT).show()
+                navController.navigate(Screen.Login.route) {
+                    popUpTo(0) { inclusive = true }
+                }
+            },
+            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error),
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(50.dp)
+                .shadow(6.dp, RoundedCornerShape(16.dp)),
+            shape = RoundedCornerShape(16.dp)
+        ) {
+            Text("Logout", color = MaterialTheme.colorScheme.onError, fontFamily = Poppins)
+        }
     }
 }
