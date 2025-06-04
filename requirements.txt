@@ -1,4 +1,8 @@
-torch
-torchvision
+torch==2.0.1
+torchvision==0.15.2
 matplotlib
+numpy
+pandas
+scikit-learn
 Pillow
+tqdm
