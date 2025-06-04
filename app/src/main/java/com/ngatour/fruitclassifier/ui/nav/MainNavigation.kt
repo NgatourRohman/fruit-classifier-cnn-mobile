@@ -17,12 +17,12 @@ import com.ngatour.fruitclassifier.ui.components.CustomBottomNavigationBar
 import com.ngatour.fruitclassifier.ui.history.HistoryScreen
 import com.ngatour.fruitclassifier.ui.live.LiveCameraScreen
 import com.ngatour.fruitclassifier.ui.profile.ProfileScreen
-import com.ngatour.fruitclassifier.ui.settings.AboutScreen
-import com.ngatour.fruitclassifier.ui.settings.SettingsScreen
 import com.ngatour.fruitclassifier.ui.splash.SplashScreen
 import com.ngatour.fruitclassifier.ui.results.ResultsScreen
 import androidx.compose.material3.Scaffold
 import androidx.compose.ui.graphics.Color
+import com.ngatour.fruitclassifier.ui.about.AboutAppScreen
+import com.ngatour.fruitclassifier.ui.about.AboutDeveloperScreen
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
@@ -47,8 +47,8 @@ fun MainNavigation(isDarkMode: Boolean, onThemeToggle: () -> Unit) {
                         Screen.Classify.route -> "home"
                         Screen.History.route -> "history"
                         Screen.Live.route -> "scan"
-                        Screen.Stats.route -> "results"
-                        Screen.Settings.route -> "profile"
+                        Screen.Result.route -> "results"
+                        Screen.Profile.route -> "profile"
                         else -> "home"
                     },
                     onItemClick = { id ->
@@ -56,8 +56,8 @@ fun MainNavigation(isDarkMode: Boolean, onThemeToggle: () -> Unit) {
                             "home" -> navController.navigate(Screen.Classify.route)
                             "history" -> navController.navigate(Screen.History.route)
                             "scan" -> navController.navigate(Screen.Live.route)
-                            "results" -> navController.navigate(Screen.Stats.route)
-                            "profile" -> navController.navigate(Screen.Settings.route)
+                            "results" -> navController.navigate(Screen.Result.route)
+                            "profile" -> navController.navigate(Screen.Profile.route)
                         }
                     }
                 )
@@ -87,21 +87,21 @@ fun MainNavigation(isDarkMode: Boolean, onThemeToggle: () -> Unit) {
             composable(Screen.Live.route) {
                 LiveCameraScreen(viewModel = viewModel)
             }
-            composable(Screen.Stats.route) {
+            composable(Screen.Result.route) {
                 ResultsScreen(viewModel = viewModel)
             }
-            composable(Screen.Settings.route) {
-                SettingsScreen(
+            composable(Screen.Profile.route) {
+                ProfileScreen(
                     viewModel = viewModel,
-                    navController = navController,
-                    onThemeToggled = onThemeToggle
+                    onThemeToggled = onThemeToggle,
+                    navController
                 )
             }
-            composable(Screen.Profile.route) {
-                ProfileScreen()
+            composable(Screen.AboutApp.route) {
+                AboutAppScreen(navController)
             }
-            composable(Screen.About.route) {
-                AboutScreen()
+            composable(Screen.AboutDeveloper.route) {
+                AboutDeveloperScreen(navController)
             }
         }
     }
