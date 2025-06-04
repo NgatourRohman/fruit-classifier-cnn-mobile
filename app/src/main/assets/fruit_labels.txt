@@ -1,0 +1,10 @@
+banana
+durian
+guava
+mango
+mangosteen
+orange
+papaya
+pineapple
+rambutan
+salak
