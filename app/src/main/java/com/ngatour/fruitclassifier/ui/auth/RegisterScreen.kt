@@ -1,16 +1,14 @@
 package com.ngatour.fruitclassifier.ui.auth
 
 import android.widget.Toast
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Email
-import androidx.compose.material.icons.filled.Lock
-import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.Visibility
-import androidx.compose.material.icons.filled.VisibilityOff
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -45,6 +43,15 @@ fun RegisterScreen(navController: NavController, viewModel: AuthViewModel = Auth
     var passwordVisible by remember { mutableStateOf(false) }
     var isLoading by remember { mutableStateOf(false) }
 
+    val offsetY = remember { Animatable(300f) }
+
+    LaunchedEffect(Unit) {
+        offsetY.animateTo(
+            targetValue = 0f,
+            animationSpec = tween(durationMillis = 500)
+        )
+    }
+
     Box(modifier = Modifier.fillMaxSize()) {
 
         // Background
@@ -55,12 +62,23 @@ fun RegisterScreen(navController: NavController, viewModel: AuthViewModel = Auth
             contentScale = ContentScale.Crop
         )
 
+        // Logo
+        Image(
+            painter = painterResource(id = R.drawable.fruit_logo),
+            contentDescription = "Logo",
+            modifier = Modifier
+                .size(130.dp)
+                .align(Alignment.TopCenter)
+                .offset(y = (65).dp)
+        )
+
         // Blur Container
         Box(
             modifier = Modifier
                 .fillMaxWidth()
                 .fillMaxHeight(0.73f)
                 .align(Alignment.BottomCenter)
+                .offset(y = offsetY.value.dp)
                 .graphicsLayer {
                     alpha = 0.64f
                     shape = RoundedCornerShape(topStart = 30.dp, topEnd = 30.dp)
@@ -70,23 +88,14 @@ fun RegisterScreen(navController: NavController, viewModel: AuthViewModel = Auth
                 .blur(9.dp)
         )
 
-        // Form Area
+        // Form Area with animation
         Box(
             modifier = Modifier
                 .fillMaxWidth()
                 .fillMaxHeight(0.73f)
                 .align(Alignment.BottomCenter)
+                .offset(y = offsetY.value.dp)
         ) {
-
-            Image(
-                painter = painterResource(id = R.drawable.fruit_logo),
-                contentDescription = "Logo",
-                modifier = Modifier
-                    .size(130.dp)
-                    .align(Alignment.TopCenter)
-                    .offset(y = (-170).dp)
-            )
-
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -184,6 +193,7 @@ fun RegisterScreen(navController: NavController, viewModel: AuthViewModel = Auth
                         unfocusedContainerColor = Color.White
                     )
                 )
+
                 Spacer(modifier = Modifier.height(32.dp))
 
                 // Button
@@ -246,7 +256,6 @@ fun RegisterScreen(navController: NavController, viewModel: AuthViewModel = Auth
         }
     }
 }
-
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable

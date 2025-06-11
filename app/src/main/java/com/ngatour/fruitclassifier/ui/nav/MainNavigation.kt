@@ -78,22 +78,10 @@ fun MainNavigation(isDarkMode: Boolean, onThemeToggle: () -> Unit) {
             composable(Screen.Splash.route) {
                 SplashScreen(navController)
             }
-            composable(
-                route = Screen.Login.route,
-                enterTransition = { slideInVertically(initialOffsetY = { 300 }) + fadeIn() },
-                exitTransition = { slideOutVertically(targetOffsetY = { -300 }) + fadeOut() },
-                popEnterTransition = { slideInVertically(initialOffsetY = { -300 }) + fadeIn() },
-                popExitTransition = { slideOutVertically(targetOffsetY = { 300 }) + fadeOut() }
-            ) {
+            composable(route = Screen.Login.route) {
                 LoginScreen(navController)
             }
-            composable(
-                route = Screen.Register.route,
-                enterTransition = { slideInVertically(initialOffsetY = { 300 }) + fadeIn() },
-                exitTransition = { slideOutVertically(targetOffsetY = { -300 }) + fadeOut() },
-                popEnterTransition = { slideInVertically(initialOffsetY = { -300 }) + fadeIn() },
-                popExitTransition = { slideOutVertically(targetOffsetY = { 300 }) + fadeOut() }
-            ) {
+            composable(route = Screen.Register.route) {
                 RegisterScreen(navController)
             }
             composable(Screen.Classify.route) {
