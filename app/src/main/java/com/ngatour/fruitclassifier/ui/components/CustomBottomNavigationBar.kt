@@ -3,10 +3,12 @@ package com.ngatour.fruitclassifier.ui.components
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
@@ -55,8 +57,9 @@ fun CustomBottomNavigationBar(active: String, onItemClick: (String) -> Unit) {
                     BottomNavItem("profile", R.drawable.ic_profile, R.drawable.ic_profile_filled, "Profile"),
                 )
 
-
                 items.forEach { item ->
+                    val interactionSource = remember { MutableInteractionSource() }
+
                     if (item.isCenter) {
                         Box(
                             modifier = Modifier
@@ -66,7 +69,12 @@ fun CustomBottomNavigationBar(active: String, onItemClick: (String) -> Unit) {
                                     color = Color(0xFFFF6F00),
                                     shape = RoundedCornerShape(32.dp)
                                 )
-                                .clickable { onItemClick(item.id) },
+                                .clickable(
+                                    interactionSource = interactionSource,
+                                    indication = null
+                                ) {
+                                    onItemClick(item.id)
+                                },
                             contentAlignment = Alignment.Center
                         ) {
                             Image(
@@ -81,7 +89,12 @@ fun CustomBottomNavigationBar(active: String, onItemClick: (String) -> Unit) {
                             verticalArrangement = Arrangement.Center,
                             modifier = Modifier
                                 .weight(1f)
-                                .clickable { onItemClick(item.id) }
+                                .clickable(
+                                    interactionSource = interactionSource,
+                                    indication = null
+                                ) {
+                                    onItemClick(item.id)
+                                }
                         ) {
                             Image(
                                 painter = painterResource(id = if (active == item.id) item.iconActive else item.iconInactive),
@@ -104,7 +117,6 @@ fun CustomBottomNavigationBar(active: String, onItemClick: (String) -> Unit) {
     }
 }
 
-
 data class BottomNavItem(
     val id: String,
     val iconInactive: Int,
@@ -112,7 +124,6 @@ data class BottomNavItem(
     val label: String,
     val isCenter: Boolean = false
 )
-
 
 @Preview(showBackground = true)
 @Composable
