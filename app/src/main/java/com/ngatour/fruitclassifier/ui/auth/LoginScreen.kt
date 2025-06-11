@@ -1,6 +1,8 @@
 package com.ngatour.fruitclassifier.ui.auth
 
 import android.widget.Toast
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -44,6 +46,15 @@ fun LoginScreen(navController: NavController, viewModel: AuthViewModel = AuthVie
     var rememberMe by remember { mutableStateOf(false) }
     var passwordVisible by remember { mutableStateOf(false) }
 
+    // Vertical animation for containers
+    val offsetY = remember { Animatable(300f) }
+    LaunchedEffect(Unit) {
+        offsetY.animateTo(
+            targetValue = 0f,
+            animationSpec = tween(durationMillis = 500)
+        )
+    }
+
     Box(modifier = Modifier.fillMaxSize()) {
 
         // Background image
@@ -54,35 +65,36 @@ fun LoginScreen(navController: NavController, viewModel: AuthViewModel = AuthVie
             contentScale = ContentScale.Crop
         )
 
-        // Blur Rectangle container behind form
-        Box(
+        // Logo
+        Image(
+            painter = painterResource(id = R.drawable.fruit_logo),
+            contentDescription = "Logo",
             modifier = Modifier
-                .fillMaxWidth()
-                .fillMaxHeight(0.73f)
-                .align(Alignment.BottomCenter)
-                .graphicsLayer {
-                    alpha = 0.64f
-                    shape = RoundedCornerShape(topStart = 30.dp, topEnd = 30.dp)
-                    clip = true
-                }
-                .background(Color.White)
-                .blur(9.dp)
+                .size(130.dp)
+                .align(Alignment.TopCenter)
+                .offset(y = (65).dp)
         )
 
+        // Animated box (blur + form)
         Box(
             modifier = Modifier
                 .fillMaxWidth()
                 .fillMaxHeight(0.73f)
+                .offset(y = offsetY.value.dp) // ← vertical animation applied here
                 .align(Alignment.BottomCenter)
         ) {
 
-            Image(
-                painter = painterResource(id = R.drawable.fruit_logo),
-                contentDescription = "Logo",
+            // Blur Background form
+            Box(
                 modifier = Modifier
-                    .size(130.dp)
-                    .align(Alignment.TopCenter)
-                    .offset(y = (-170).dp)
+                    .matchParentSize()
+                    .graphicsLayer {
+                        alpha = 0.64f
+                        shape = RoundedCornerShape(topStart = 30.dp, topEnd = 30.dp)
+                        clip = true
+                    }
+                    .background(Color.White)
+                    .blur(9.dp)
             )
 
             // Login Form
@@ -94,7 +106,6 @@ fun LoginScreen(navController: NavController, viewModel: AuthViewModel = AuthVie
                     .align(Alignment.Center),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-
                 Text(
                     "Hello Again",
                     fontSize = 28.sp,
@@ -171,13 +182,12 @@ fun LoginScreen(navController: NavController, viewModel: AuthViewModel = AuthVie
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Box(
-                        modifier = Modifier
-                            .shadow(
-                                elevation = 4.dp,
-                                shape = RoundedCornerShape(50), // Elips shape
-                                ambientColor = Color.Black.copy(alpha = 0.2f),
-                                spotColor = Color.Black.copy(alpha = 0.2f)
-                            )
+                        modifier = Modifier.shadow(
+                            elevation = 4.dp,
+                            shape = RoundedCornerShape(50),
+                            ambientColor = Color.Black.copy(alpha = 0.2f),
+                            spotColor = Color.Black.copy(alpha = 0.2f)
+                        )
                     ) {
                         Switch(
                             checked = rememberMe,
@@ -218,8 +228,7 @@ fun LoginScreen(navController: NavController, viewModel: AuthViewModel = AuthVie
                             email, password, context,
                             onSuccess = {
                                 if (rememberMe) {
-                                    val token = "logged_in"
-                                    SessionManager(context).saveToken(token)
+                                    SessionManager(context).saveToken("logged_in")
                                 }
                                 navController.navigate(Screen.Classify.route)
                             },
@@ -250,13 +259,14 @@ fun LoginScreen(navController: NavController, viewModel: AuthViewModel = AuthVie
                         onClick = { navController.navigate(Screen.Register.route) },
                         contentPadding = PaddingValues(start = 4.dp)
                     ) {
-                        Text("Sign up", color = Color(0xFFFF6F00),fontFamily = Poppins, fontWeight = FontWeight.Bold)
+                        Text("Sign up", color = Color(0xFFFF6F00), fontFamily = Poppins, fontWeight = FontWeight.Bold)
                     }
                 }
             }
         }
     }
 }
+
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable

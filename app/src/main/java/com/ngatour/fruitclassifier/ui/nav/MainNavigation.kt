@@ -1,17 +1,18 @@
 package com.ngatour.fruitclassifier.ui.nav
 
 import androidx.compose.animation.*
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.compose.rememberNavController
+import androidx.navigation.compose.currentBackStackEntryAsState
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
-import androidx.navigation.compose.rememberNavController
-import androidx.navigation.compose.currentBackStackEntryAsState
 import com.ngatour.fruitclassifier.data.viewmodel.HistoryViewModel
 import com.ngatour.fruitclassifier.ui.auth.LoginScreen
 import com.ngatour.fruitclassifier.ui.auth.RegisterScreen
@@ -69,26 +70,18 @@ fun MainNavigation(isDarkMode: Boolean, onThemeToggle: () -> Unit) {
             navController = navController,
             startDestination = Screen.Splash.route,
             modifier = Modifier.padding(padding),
-            enterTransition = {
-                slideInHorizontally(initialOffsetX = { 1000 }) + fadeIn()
-            },
-            exitTransition = {
-                slideOutHorizontally(targetOffsetX = { -1000 }) + fadeOut()
-            },
-            popEnterTransition = {
-                slideInHorizontally(initialOffsetX = { -1000 }) + fadeIn()
-            },
-            popExitTransition = {
-                slideOutHorizontally(targetOffsetX = { 1000 }) + fadeOut()
-            }
+            enterTransition = { fadeIn(animationSpec = tween(300)) },
+            exitTransition = { fadeOut(animationSpec = tween(300)) },
+            popEnterTransition = { fadeIn(animationSpec = tween(300)) },
+            popExitTransition = { fadeOut(animationSpec = tween(300)) }
         ) {
             composable(Screen.Splash.route) {
                 SplashScreen(navController)
             }
-            composable(Screen.Login.route) {
+            composable(route = Screen.Login.route) {
                 LoginScreen(navController)
             }
-            composable(Screen.Register.route) {
+            composable(route = Screen.Register.route) {
                 RegisterScreen(navController)
             }
             composable(Screen.Classify.route) {
