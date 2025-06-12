@@ -49,7 +49,7 @@ fun LiveCameraScreen(viewModel: HistoryViewModel) {
                 val resized = bitmap.scale(224, 224)
                 val result = classifyBitmap(context, resized, "model_fruit_mobile.pt")
 
-                // Hanya tampilkan hasil klasifikasi, tanpa simpan atau upload
+                // Only display classification results, no saving or uploading
                 label.value = result.label
                 confidence.value = result.confidence
             }
