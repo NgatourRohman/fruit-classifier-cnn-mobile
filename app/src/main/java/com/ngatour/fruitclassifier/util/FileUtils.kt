@@ -11,8 +11,8 @@ import com.ngatour.fruitclassifier.data.model.ClassificationResult
 import java.io.File
 import java.io.FileOutputStream
 
-fun saveBitmapToCache(context: Context, bitmap: Bitmap): Uri {
-    val file = File(context.cacheDir, "camera_image.jpg")
+fun saveBitmapToCache(context: Context, bitmap: Bitmap, filename: String = "camera_image_${System.currentTimeMillis()}.jpg"): Uri {
+    val file = File(context.cacheDir, filename)
     FileOutputStream(file).use { out ->
         bitmap.compress(Bitmap.CompressFormat.JPEG, 100, out)
     }

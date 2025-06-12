@@ -1,6 +1,5 @@
 package com.ngatour.fruitclassifier.ui.live
 
-import android.util.Log
 import androidx.camera.core.*
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
@@ -21,16 +20,11 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.ngatour.fruitclassifier.data.viewmodel.HistoryViewModel
 import com.ngatour.fruitclassifier.ui.theme.Poppins
 import com.ngatour.fruitclassifier.util.classifyBitmap
-import com.ngatour.fruitclassifier.util.uploadBitmapToSupabase
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 
 @Composable
 fun LiveCameraScreen(viewModel: HistoryViewModel) {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
-//    val resultText = remember { mutableStateOf("Waiting for classification...") }
     val label = remember { mutableStateOf<String?>(null) }
     val confidence = remember { mutableStateOf<Float?>(null) }
 
@@ -49,31 +43,13 @@ fun LiveCameraScreen(viewModel: HistoryViewModel) {
             .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
             .build()
 
-        val analyzerScope = CoroutineScope(Dispatchers.IO)
-
         imageAnalyzer.setAnalyzer(Executors.newSingleThreadExecutor()) { imageProxy ->
             val bitmap = imageProxy.toBitmap()
             if (bitmap != null) {
                 val resized = bitmap.scale(224, 224)
                 val result = classifyBitmap(context, resized, "model_fruit_mobile.pt")
 
-                analyzerScope.launch {
-                    if (result.label != "Not recognized") {
-                        try {
-                            val imageUrl = uploadBitmapToSupabase(context, bitmap)
-
-                            if (imageUrl != null) {
-                                viewModel.saveToHistory(result, imageUrl)
-                                viewModel.uploadToSupabaseSingle(result, imageUrl, context)
-                            } else {
-                                Log.e("CAMERA_UPLOAD", "Failed to upload image (imageUrl null)")
-                            }
-                        } catch (e: Exception) {
-                            Log.e("CAMERA_UPLOAD", "Failed to upload image: ${e.message}")
-                        }
-                    }
-                }
-
+                // Only display classification results, no saving or uploading
                 label.value = result.label
                 confidence.value = result.confidence
             }
@@ -123,3 +99,4 @@ fun LiveCameraScreen(viewModel: HistoryViewModel) {
         }
     }
 }
+

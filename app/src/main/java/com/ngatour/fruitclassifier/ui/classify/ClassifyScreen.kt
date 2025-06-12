@@ -68,7 +68,7 @@ fun FruitClassifierScreen(viewModel: HistoryViewModel) {
 
     val cameraLauncher = rememberLauncherForActivityResult(ActivityResultContracts.TakePicturePreview()) { bitmap ->
         bitmap?.let {
-            val uri = saveBitmapToCache(context, it)
+            val uri = saveBitmapToCache(context, it, "camera_image_${System.currentTimeMillis()}.jpg")
             imageUri = uri
             val res = classifyBitmap(context, it, "model_fruit_mobile.pt")
             res?.let {
@@ -150,7 +150,9 @@ fun FruitClassifierScreen(viewModel: HistoryViewModel) {
             Spacer(modifier = Modifier.height(24.dp))
 
             Image(
-                painter = rememberAsyncImagePainter(model = imageUri),
+                painter = rememberAsyncImagePainter(
+                    model = imageUri
+                ),
                 contentDescription = "Classified Image",
                 modifier = Modifier
                     .fillMaxWidth()
