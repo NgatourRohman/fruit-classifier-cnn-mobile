@@ -42,10 +42,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="d03ca7f3-0ceb-4af6-9b54-5a9ea0014dd0" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/caches/deviceStreaming.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/ngatour/fruitclassifier/ui/classify/ClassifyScreen.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/ngatour/fruitclassifier/ui/classify/ClassifyScreen.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/ngatour/fruitclassifier/util/FileUtils.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/ngatour/fruitclassifier/util/FileUtils.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/ngatour/fruitclassifier/ui/live/LiveCameraScreen.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/ngatour/fruitclassifier/ui/live/LiveCameraScreen.kt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
