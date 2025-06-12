@@ -105,7 +105,7 @@ fun CustomBottomNavigationBar(active: String, onItemClick: (String) -> Unit) {
                             Text(
                                 text = item.label,
                                 fontFamily = Poppins,
-                                fontSize = 10.sp,
+                                fontSize = 14.sp,
                                 fontWeight = FontWeight.Medium,
                                 color = if (active == item.id) Color(0xFFFF6F00) else Color.Gray
                             )
