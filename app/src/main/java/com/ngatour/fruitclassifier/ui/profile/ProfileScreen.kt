@@ -34,7 +34,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
-
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 
 @Composable
 fun ProfileScreen(
@@ -46,11 +47,8 @@ fun ProfileScreen(
     val userPrefs = remember { UserPreferences(context) }
     val name = userPrefs.name.ifBlank { "Unknown" }
     val email = userPrefs.email.ifBlank { "Unknown" }
-    val themePrefs = LocalThemePreference.current
-    var isDarkMode by remember { mutableStateOf(themePrefs.isDarkMode) }
     var showDialog by remember { mutableStateOf(false) }
     val session = SessionManager(context)
-
 
     if (showDialog) {
         AlertDialog(
@@ -98,6 +96,7 @@ fun ProfileScreen(
             .fillMaxSize()
             .background(Color(0xFFFFF3E0))
             .padding(24.dp)
+            .verticalScroll(rememberScrollState()) // 👈 membuat halaman bisa discroll
     ) {
 
         Spacer(modifier = Modifier.height(25.dp))
@@ -120,36 +119,6 @@ fun ProfileScreen(
         ProfileItem(icon = Icons.Default.Person, label = name)
         Spacer(modifier = Modifier.height(8.dp))
         ProfileItem(icon = Icons.Default.Email, label = email, labelColor = Color(0xFFFF6F00))
-
-        Spacer(modifier = Modifier.height(24.dp))
-
-        // Settings
-        SectionTitle("Settings")
-        Spacer(modifier = Modifier.height(12.dp))
-
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Column {
-                Text("Theme", fontFamily = Poppins, fontSize = 18.sp)
-                Text(
-                    if (isDarkMode) "Dark" else "Light",
-                    fontSize = 16.sp,
-                    fontFamily = Poppins,
-                    color = Color(0xFFFF6F00)
-                )
-            }
-            Switch(
-                checked = isDarkMode,
-                onCheckedChange = {
-                    isDarkMode = it
-                    themePrefs.isDarkMode = it
-                    onThemeToggled()
-                }
-            )
-        }
 
         Spacer(modifier = Modifier.height(24.dp))
 

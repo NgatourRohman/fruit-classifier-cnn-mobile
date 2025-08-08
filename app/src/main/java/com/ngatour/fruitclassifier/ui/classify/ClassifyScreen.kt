@@ -8,6 +8,8 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
@@ -54,15 +56,16 @@ fun FruitClassifierScreen(viewModel: HistoryViewModel) {
 
     var imageUri by remember { mutableStateOf<Uri?>(null) }
     var result by remember { mutableStateOf<ClassificationResult?>(null) }
+    val coroutineScope = rememberCoroutineScope()
+    val scrollState = rememberScrollState()
 
     val galleryLauncher = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri ->
         imageUri = uri
         uri?.let {
             val bitmap = uriToBitmap(context, it)
             val res = classifyBitmap(context, bitmap, "model_fruit_mobile.pt")
-            res?.let {
-                result = it
-            } ?: Toast.makeText(context, "Failed to classify image", Toast.LENGTH_SHORT).show()
+            res?.let { r -> result = r }
+                ?: Toast.makeText(context, "Failed to classify image", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -71,9 +74,8 @@ fun FruitClassifierScreen(viewModel: HistoryViewModel) {
             val uri = saveBitmapToCache(context, it, "camera_image_${System.currentTimeMillis()}.jpg")
             imageUri = uri
             val res = classifyBitmap(context, it, "model_fruit_mobile.pt")
-            res?.let {
-                result = it
-            } ?: Toast.makeText(context, "Failed to classify image", Toast.LENGTH_SHORT).show()
+            res?.let { r -> result = r }
+                ?: Toast.makeText(context, "Failed to classify image", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -81,7 +83,11 @@ fun FruitClassifierScreen(viewModel: HistoryViewModel) {
         modifier = Modifier
             .fillMaxSize()
             .background(Color(0xFFFFF3E0))
-            .padding(24.dp),
+            .statusBarsPadding()
+            .navigationBarsPadding() // hindari ketutup nav bar
+            .imePadding()            // ruang saat keyboard muncul
+            .padding(horizontal = 24.dp)
+            .verticalScroll(scrollState), // <-- bikin konten bisa discroll
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Top
     ) {
@@ -146,13 +152,13 @@ fun FruitClassifierScreen(viewModel: HistoryViewModel) {
             Spacer(modifier = Modifier.height(16.dp))
             SupportedFruitIcons()
 
+            // Spacer ekstra biar tombol terakhir ga kepotong
+            Spacer(modifier = Modifier.height(24.dp))
         } else {
             Spacer(modifier = Modifier.height(24.dp))
 
             Image(
-                painter = rememberAsyncImagePainter(
-                    model = imageUri
-                ),
+                painter = rememberAsyncImagePainter(model = imageUri),
                 contentDescription = "Classified Image",
                 modifier = Modifier
                     .fillMaxWidth()
@@ -172,7 +178,10 @@ fun FruitClassifierScreen(viewModel: HistoryViewModel) {
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            Column(modifier = Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
                 ResultItem("Fruit Label", result!!.label, Icons.Default.Label, valueColor = Color(0xFFFF6F00))
                 ResultItem("Confidence Score", "${"%.2f".format(result!!.confidence)}%", Icons.Default.Percent, valueColor = Color(0xFFFF6F00))
                 ResultItem("Time Taken", "${result!!.processTimeMs} ms", Icons.Default.Timer, valueColor = Color(0xFFFF6F00))
@@ -189,8 +198,6 @@ fun FruitClassifierScreen(viewModel: HistoryViewModel) {
             )
 
             Spacer(modifier = Modifier.height(24.dp))
-
-            val coroutineScope = rememberCoroutineScope()
 
             Button(
                 onClick = {
@@ -219,7 +226,6 @@ fun FruitClassifierScreen(viewModel: HistoryViewModel) {
                 Text("Save Result", color = Color.White, fontFamily = Poppins, fontWeight = FontWeight.Bold)
             }
 
-
             Spacer(modifier = Modifier.height(12.dp))
 
             Button(
@@ -236,6 +242,9 @@ fun FruitClassifierScreen(viewModel: HistoryViewModel) {
             ) {
                 Text("Try Another Image", color = Color.Black, fontFamily = Poppins, fontWeight = FontWeight.SemiBold)
             }
+
+            // Spacer ekstra supaya tombol paling bawah tidak ketutup nav bar
+            Spacer(modifier = Modifier.height(24.dp))
         }
     }
 }

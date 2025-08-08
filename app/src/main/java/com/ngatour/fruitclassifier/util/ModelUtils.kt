@@ -75,51 +75,40 @@ fun isModelUpToDate(localFile: File, remoteUrl: String): Boolean {
 }
 
 fun classifyBitmap(context: Context, bitmap: Bitmap, modelName: String): ClassificationResult {
-    val labels = listOf("Banana", "Mango", "Orange", "Pineapple", "Salak")
-    val labelDescriptions = mapOf(
-        "Banana" to "Banana is classified based on its curved shape, bright yellow skin when ripe, and relatively smooth surface. These characteristics allow CNN models to recognize edge and contour patterns unique to bananas.",
-        "Mango" to "Mangoes have an oval shape with skin colors ranging from green, yellow to reddish. Surface texture and complex color gradients are important features for visual classification using CNN.",
-        "Orange" to "Oranges are identified by their round symmetric shape and bumpy surface texture. The vibrant orange color and lighting pattern on the peel are key visual features recognized by CNN.",
-        "Pineapple" to "Pineapples have a distinct morphology with scaly textured surfaces and mixed yellow-green colors. CNN uses geometric patterns of the skin and crown as primary classification features.",
-        "Salak" to "Salak is known for its dark brown scaly skin and teardrop-like shape. The unique scale texture and strong color contrast are the main visual features CNN relies on to distinguish this fruit."
+    val labels = listOf(
+        "Banana",
+        "Durian",
+        "Guava",
+        "Mango",
+        "Mangosteen",
+        "Orange",
+        "Papaya",
+        "Pineapple",
+        "Rambutan",
+        "Salak"
     )
 
-// Uncomment below to use extended label set (with translations)
-//
-//    val labels = listOf(
-//        "Banana",
-//        "Durian",
-//        "Guava",
-//        "Mango",
-//        "Mangosteen",
-//        "Orange",
-//        "Papaya",
-//        "Pineapple",
-//        "Rambutan",
-//        "Salak"
-//    )
-//
-//    val labelDescriptions = mapOf(
-//        "Banana" to "Bananas have a long and slightly curved shape with smooth yellow skin when ripe. CNN models recognize its simple contour and uniform color as key features.",
-//
-//        "Durian" to "Durian is recognized by its large round shape and sharp greenish spines. The spiky texture and shadow between spikes are strong CNN indicators.",
-//
-//        "Guava" to "Guavas are round to oval with soft-textured green or yellowish skin. CNN detects soft edges and subtle color gradients.",
-//
-//        "Mango" to "Mangoes are oval-shaped with skin tones from green to orange-red. CNN learns to classify based on silhouette and complex gradient colors.",
-//
-//        "Mangosteen" to "Mangosteens are perfectly round with deep purple skin and a small crown. CNN relies on its rich color and top crown as visual markers.",
-//
-//        "Orange" to "Oranges are round with porous bright orange skin. CNN captures the surface texture and distinctive saturation.",
-//
-//        "Papaya" to "Papayas are large and oval with green-to-orange skin as it ripens. CNN uses its long shape, proportions, and smooth gradients.",
-//
-//        "Pineapple" to "Pineapples have hexagonal scale-like skin with a leaf crown. CNN identifies its geometric texture and high yellow-green contrast.",
-//
-//        "Rambutan" to "Rambutans are small round fruits with soft hairs on their red skin. CNN uses the unique hairy texture and vivid color.",
-//
-//        "Salak" to "Salak (snake fruit) is teardrop-shaped with dark brown scaly skin. CNN recognizes the high-contrast, scale-like surface."
-//    )
+    val labelDescriptions = mapOf(
+        "Banana" to "Bananas have a long and slightly curved shape with smooth yellow skin when ripe. CNN models recognize its simple contour and uniform color as key features.",
+
+        "Durian" to "Durian is recognized by its large round shape and sharp greenish spines. The spiky texture and shadow between spikes are strong CNN indicators.",
+
+        "Guava" to "Guavas are round to oval with soft-textured green or yellowish skin. CNN detects soft edges and subtle color gradients.",
+
+        "Mango" to "Mangoes are oval-shaped with skin tones from green to orange-red. CNN learns to classify based on silhouette and complex gradient colors.",
+
+        "Mangosteen" to "Mangosteens are perfectly round with deep purple skin and a small crown. CNN relies on its rich color and top crown as visual markers.",
+
+        "Orange" to "Oranges are round with porous bright orange skin. CNN captures the surface texture and distinctive saturation.",
+
+        "Papaya" to "Papayas are large and oval with green-to-orange skin as it ripens. CNN uses its long shape, proportions, and smooth gradients.",
+
+        "Pineapple" to "Pineapples have hexagonal scale-like skin with a leaf crown. CNN identifies its geometric texture and high yellow-green contrast.",
+
+        "Rambutan" to "Rambutans are small round fruits with soft hairs on their red skin. CNN uses the unique hairy texture and vivid color.",
+
+        "Salak" to "Salak (snake fruit) is teardrop-shaped with dark brown scaly skin. CNN recognizes the high-contrast, scale-like surface."
+    )
 
     val threshold = 0.75f
 
