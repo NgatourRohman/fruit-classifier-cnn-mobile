@@ -84,14 +84,14 @@ fun FruitClassifierScreen(viewModel: HistoryViewModel) {
             .fillMaxSize()
             .background(Color(0xFFFFF3E0))
             .statusBarsPadding()
-            .navigationBarsPadding() // hindari ketutup nav bar
-            .imePadding()            // ruang saat keyboard muncul
+            .navigationBarsPadding()
+            .imePadding()
             .padding(horizontal = 24.dp)
-            .verticalScroll(scrollState), // <-- bikin konten bisa discroll
+            .verticalScroll(scrollState),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Top
     ) {
-        Spacer(modifier = Modifier.height(25.dp))
+        Spacer(modifier = Modifier.height(50.dp))
         Text("Fruit Classifier", fontFamily = Poppins, fontWeight = FontWeight.Bold, fontSize = 20.sp)
 
         if (result == null) {
@@ -152,7 +152,6 @@ fun FruitClassifierScreen(viewModel: HistoryViewModel) {
             Spacer(modifier = Modifier.height(16.dp))
             SupportedFruitIcons()
 
-            // Spacer ekstra biar tombol terakhir ga kepotong
             Spacer(modifier = Modifier.height(24.dp))
         } else {
             Spacer(modifier = Modifier.height(24.dp))
@@ -243,7 +242,6 @@ fun FruitClassifierScreen(viewModel: HistoryViewModel) {
                 Text("Try Another Image", color = Color.Black, fontFamily = Poppins, fontWeight = FontWeight.SemiBold)
             }
 
-            // Spacer ekstra supaya tombol paling bawah tidak ketutup nav bar
             Spacer(modifier = Modifier.height(24.dp))
         }
     }

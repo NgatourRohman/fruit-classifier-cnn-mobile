@@ -18,7 +18,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.ngatour.fruitclassifier.LocalThemePreference
 import com.ngatour.fruitclassifier.data.auth.SessionManager
 import com.ngatour.fruitclassifier.data.pref.UserPreferences
 import com.ngatour.fruitclassifier.data.remote.SupabaseConfig
@@ -96,7 +95,7 @@ fun ProfileScreen(
             .fillMaxSize()
             .background(Color(0xFFFFF3E0))
             .padding(24.dp)
-            .verticalScroll(rememberScrollState()) // 👈 membuat halaman bisa discroll
+            .verticalScroll(rememberScrollState())
     ) {
 
         Spacer(modifier = Modifier.height(25.dp))
