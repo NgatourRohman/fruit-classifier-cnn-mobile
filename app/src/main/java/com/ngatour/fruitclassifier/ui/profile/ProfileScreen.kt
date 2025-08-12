@@ -20,19 +20,12 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.ngatour.fruitclassifier.data.auth.SessionManager
 import com.ngatour.fruitclassifier.data.pref.UserPreferences
-import com.ngatour.fruitclassifier.data.remote.SupabaseConfig
 import com.ngatour.fruitclassifier.data.viewmodel.HistoryViewModel
 import com.ngatour.fruitclassifier.ui.components.ClickableRow
 import com.ngatour.fruitclassifier.ui.components.ProfileItem
 import com.ngatour.fruitclassifier.ui.components.SectionTitle
 import com.ngatour.fruitclassifier.ui.nav.Screen
 import com.ngatour.fruitclassifier.ui.theme.Poppins
-import com.ngatour.fruitclassifier.util.downloadModelFromUrl
-import com.ngatour.fruitclassifier.util.isModelUpToDate
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import java.io.File
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 
@@ -124,52 +117,6 @@ fun ProfileScreen(
         // Data
         SectionTitle("Data")
         Spacer(modifier = Modifier.height(12.dp))
-
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text("Update Model", fontFamily = Poppins)
-            val coroutineScope = rememberCoroutineScope()
-
-            Button(
-                onClick = {
-                    coroutineScope.launch(Dispatchers.IO) {
-                        val modelUrl = "${SupabaseConfig.STORAGE_PUBLIC_URL}/storage/v1/object/public/models/model_fruit_mobile.pt"
-                        val localFile = File(context.filesDir, "model_fruit_mobile.pt")
-                        val upToDate = if (localFile.exists()) isModelUpToDate(localFile, modelUrl) else false
-
-                        withContext(Dispatchers.Main) {
-                            if (upToDate) {
-                                Toast.makeText(context, "Model has been updated", Toast.LENGTH_SHORT).show()
-                            } else {
-                                val file = downloadModelFromUrl(context, modelUrl, "model_fruit_mobile.pt")
-                                if (file != null) {
-                                    Toast.makeText(context, "Model updated successfully", Toast.LENGTH_SHORT).show()
-                                } else {
-                                    Toast.makeText(context, "Failed to update the model", Toast.LENGTH_SHORT).show()
-                                }
-                            }
-                        }
-                    }
-                },
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFFA726)),
-                shape = RoundedCornerShape(20.dp),
-                modifier = Modifier
-                    .shadow(
-                        elevation = 6.dp,
-                        shape = RoundedCornerShape(24.dp),
-                        clip = false
-                    )
-                    .height(32.dp)
-            ) {
-                Text("Update", fontFamily = Poppins, fontSize = 14.sp)
-            }
-
-        }
-
-        Spacer(modifier = Modifier.height(16.dp))
 
         ClickableRow("Reset Classification History") {
             showDialog = true
